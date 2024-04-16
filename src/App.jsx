@@ -1,53 +1,91 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import { MapContainer, TileLayer, Polyline, Marker, Popup, Tooltip, useMapEvents, useMap } from 'react-leaflet'
 // import 'leaflet/dist/leaflet.css';
+//import fs from 'fs'
 import "leaflet/dist/leaflet.css";
 
 const attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> | Pascal Brand'
 
-const sample = [
-  {
-    lat: 48.726304979176675,
-    lon: -3.9829935637739382,
-    ele: 5.3000000000029104
-  },
-  {
-    lat: 48.701559484828174,
-    lon: -3.9820210959269011,
-    ele: 0
-  },
-  {
-    lat: 48.608899028586556,
-    lon: -3.9423607860993721,
-    ele: 0
-  },
-]
 
-function GPXTrace() {
-  let result = []
-  for (let i=0; i<sample.length-1; i++) {
-    result.push(<Polyline key={i} positions={[
-      [sample[i].lat, sample[i].lon], [sample[i+1].lat, sample[i+1].lon],
-    ]} color={'red'} />)
+
+function GPXTrace({tracks}) {
+  if (tracks.length >= 1) {
+    return <Polyline key={0} positions={[tracks[0].points]} color={'red'} smoothFactor={2}  />
   }
-  return result
 }
 
+// https://www.npmjs.com/package/react-files
+
+async function fetchTracks()  {
+  const x = await fetch('./private/all.json')
+  const r = await x.text()
+  return JSON.parse(r)
+
+}
+
+
 function App() {
-    const mapRef = useRef(null);
+  // https://urfdvw.github.io/react-local-file-system/
+  // https://classic.yarnpkg.com/en/package/react-local-file-system
+  // https://www.npmjs.com/package/react-local-file-system
+
+  // https://stackoverflow.com/questions/55830414/how-to-read-text-file-in-react
+
+
+  // const str = fs.readFileSync('C:\\Users\\pasca\\Downloads\\activity_allemans_levignac_2ePyKv0W9XA8eFYoEL8tlEXSA01.gpx')
+  // console.log(str)
+
+  const [ tracks, setTracks ] = useState([])
+  const [ center, setCenter ] = useState([48.866667, 2.333333])
+
+  useEffect(() => {
+    const asyncFunc = async () => {
+      const tracks = await fetchTracks()
+      setTracks(tracks)
+
+      let latMin = tracks[0].points[0].lat
+      let latMax = latMin
+      let lonMin = tracks[0].points[0].lon
+      let lonMax = lonMin
+
+      tracks.forEach(track => {
+        track.points.forEach(p => {
+          latMin = Math.min(latMin, p.lat)
+          latMax = Math.max(latMax, p.lat)
+          lonMin = Math.min(lonMin, p.lon)
+          lonMax = Math.max(lonMax, p.lon)
+        })
+      })
+      // setCenter([(latMin + latMax)/2, (lonMin + lonMax)/2])
+      console.log(latMin, lonMin)
+      setCenter([latMin, lonMin])
+    }
+
+    asyncFunc();
+  }, [])
+
+  // from https://stackoverflow.com/questions/64665827/react-leaflet-center-attribute-does-not-change-when-the-center-state-changes
+  // to update center
+
+  function ChangeView({ center, zoom }) {
+    const map = useMap();
+    map.setView(center, zoom);
+    return null;
+  }
 
   return (
     <>
-      <MapContainer style={{height: "75vh", width: "75vw"}} center={[sample[0].lat, sample[0].lon]}  zoom={9} scrollWheelZoom={true}  >
+      <MapContainer style={{height: "75vh", width: "75vw"}} center={center}  zoom={9} scrollWheelZoom={true}  >
+        <ChangeView center={center} zoom={9} />
         <TileLayer
           attribution={attribution}
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        <GPXTrace />
+        <GPXTrace tracks={tracks}/>
       </MapContainer>
     </>
   )
