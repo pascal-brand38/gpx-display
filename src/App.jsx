@@ -12,9 +12,11 @@ const attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">Op
 
 
 function GPXTrace({tracks}) {
-  if (tracks.length >= 1) {
-    return <Polyline key={0} positions={[tracks[0].points]} color={'red'} smoothFactor={2}  />
-  }
+  let traces = []
+  tracks.forEach((track, index) => {
+    traces.push(<Polyline key={index} positions={[track.points]} color={'red'} smoothFactor={2}  />)
+  })
+  return traces
 }
 
 // https://www.npmjs.com/package/react-files
@@ -22,8 +24,8 @@ function GPXTrace({tracks}) {
 async function fetchTracks()  {
   const x = await fetch('./private/all.json')
   const r = await x.text()
-  return JSON.parse(r)
-
+  let tracks = JSON.parse(r)
+  return tracks
 }
 
 
@@ -59,9 +61,7 @@ function App() {
           lonMax = Math.max(lonMax, p.lon)
         })
       })
-      // setCenter([(latMin + latMax)/2, (lonMin + lonMax)/2])
-      console.log(latMin, lonMin)
-      setCenter([latMin, lonMin])
+      setCenter([(latMin + latMax)/2, (lonMin + lonMax)/2])
     }
 
     asyncFunc();
