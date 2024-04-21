@@ -46,9 +46,29 @@ function GPXTrace({tracks}) {
   return traces
 }
 
-function HighlightTrace({tracks, selectedTrack}) {
-  if ((tracks.length > 0) && (selectedTrack < tracks.length)){
-    return <Polyline key={tracks.length} positions={[tracks[selectedTrack].points]} color={'blue'} smoothFactor={2} />
+function GPXName({tracks, setSelectedTrack, setHoverTrack}) {
+  let names = []
+  tracks.forEach((track, index) => {
+    // names.push(<div key={index}> {track.name} </div>)
+    // names.push(<div> <button key={index} onClick={()=>setSelectedTrack(index)}> {track.name} </button> </div>)
+    // names.push(<div key={index} onClick={()=>setSelectedTrack(index)}> {track.name} </div>)
+    names.push(<div key={index} onClick={()=>setSelectedTrack(index)} onMouseOver={()=>setHoverTrack(index)}> {track.name} </div>)
+  })
+  return names
+}
+
+function HighlightTrace({tracks, selectedTrack, hoverTrack}) {
+  let results = []
+  if (tracks.length > 0) {
+    if (selectedTrack < tracks.length) {
+      results.push(<Polyline key={0} positions={[tracks[selectedTrack].points]} color={'blue'} smoothFactor={2} />)
+    }
+    console.log(selectedTrack, hoverTrack)
+    if ((hoverTrack < tracks.length) && (hoverTrack !== selectedTrack)) {
+      results.push(<Polyline key={1} positions={[tracks[hoverTrack].points]} color={'green'} smoothFactor={2} />)
+    }
+
+    return results
   }
 }
 
@@ -74,7 +94,7 @@ async function fetchTracks()  {
     track.pauses = track.points.filter(point => isPause(point))
     track.points = track.points.filter(point => !isPause(point))
 
-    console.log(track.points)
+    // console.log(track.points)
   })
 
   return tracks
@@ -93,8 +113,9 @@ function App() {
   // console.log(str)
 
   const [ tracks, setTracks ] = useState([])    // all the tracks. Loaded in useEffect
-  const [ center, setCenter ] = useState([48.866667, 2.333333])   // Paris by default
+  const [ center, setCenter ] = useState([])
   const [ selectedTrack, setSelectedTrack ] = useState(0)
+  const [ hoverTrack, setHoverTrack ] = useState(0)
 
   useEffect(() => {
     const asyncFunc = async () => {
@@ -123,16 +144,20 @@ function App() {
   // from https://stackoverflow.com/questions/64665827/react-leaflet-center-attribute-does-not-change-when-the-center-state-changes
   // to update center
 
-  function ChangeView({ center, zoom }) {
-    const map = useMap();
-    map.setView(center, zoom);
-    return null;
+  // function ChangeView({ center, zoom }) {
+  //   const map = useMap();
+  //   map.setView(center, zoom);
+  //   return null;
+  // }
+
+  if (center.length === 0) {
+    return <></>
   }
 
   return (
-    <>
-      <MapContainer style={{height: "75vh", width: "75vw"}} center={center}  zoom={9} scrollWheelZoom={true}  >
-        <ChangeView center={center} zoom={9} />
+    <div className="main-grid">
+      <MapContainer style={{height: "75vh", width: "50vw"}} center={center}  zoom={9} scrollWheelZoom={true}  >
+        {/* <ChangeView center={center} zoom={9} /> */}
         <TileLayer
           attribution={attribution}
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -143,9 +168,13 @@ function App() {
         />
 
         <GPXTrace tracks={tracks}/>
-        <HighlightTrace tracks={tracks} selectedTrack={selectedTrack}/>
+        <HighlightTrace tracks={tracks} selectedTrack={selectedTrack} hoverTrack={hoverTrack}/>
       </MapContainer>
-    </>
+
+      <div>
+        <GPXName tracks={tracks} setSelectedTrack={setSelectedTrack} setHoverTrack={setHoverTrack}/>
+      </div>
+    </div>
   )
 
 }
