@@ -47,14 +47,19 @@ function GPXTrace({tracks}) {
 }
 
 function GPXName({tracks, setSelectedTrack, setHoverTrack}) {
-  let names = []
-  tracks.forEach((track, index) => {
-    // names.push(<div key={index}> {track.name} </div>)
-    // names.push(<div> <button key={index} onClick={()=>setSelectedTrack(index)}> {track.name} </button> </div>)
-    // names.push(<div key={index} onClick={()=>setSelectedTrack(index)}> {track.name} </div>)
-    names.push(<div key={index} onClick={()=>setSelectedTrack(index)} onMouseOver={()=>setHoverTrack(index)}> {track.name} </div>)
-  })
-  return names
+  return (
+    <div>
+    {
+      tracks.map((track, index) => {
+        return (
+          <div>
+            <button key={index} onClick={()=>setSelectedTrack(index)} onMouseOver={()=>setHoverTrack(index)}> {track.name} </button>
+          </div>
+        )
+      })
+    }
+    </div>
+  )
 }
 
 function HighlightTrace({tracks, selectedTrack, hoverTrack}) {
@@ -154,13 +159,40 @@ function App() {
     return <></>
   }
 
+  const url = {
+    // https://geoservices.ign.fr/documentation/services/services-deprecies/affichage-wmts/leaflet-et-wmts
+    // https://data.geopf.fr/private/wms-r?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities&apikey=ign_scan_ws
+    // https://wxs.ign.fr/cartes/geoportail/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities
+    ignPlan: "https://data.geopf.fr/wmts?" +
+      "&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0" +
+      "&STYLE=normal" +
+      "&TILEMATRIXSET=PM" +
+      "&FORMAT=image/png" +
+      "&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2" +
+      "&TILEMATRIX={z}" +
+      "&TILEROW={y}" +
+      "&TILECOL={x}",
+
+    ignSat: "https://data.geopf.fr/wmts?" +
+      "&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0" +
+      "&STYLE=normal" +
+      "&TILEMATRIXSET=PM" +
+      "&FORMAT=image/jpeg" +
+      "&LAYER=ORTHOIMAGERY.ORTHOPHOTOS" +
+      "&TILEMATRIX={z}" +
+      "&TILEROW={y}" +
+      "&TILECOL={x}",
+
+    openstreetmap: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  }
   return (
+    <>
     <div className="main-grid">
-      <MapContainer style={{height: "75vh", width: "50vw"}} center={center}  zoom={9} scrollWheelZoom={true}  >
+      <MapContainer style={{height: "100vh", width: "100%"}} center={center}  zoom={9} scrollWheelZoom={true}  >
         {/* <ChangeView center={center} zoom={9} /> */}
         <TileLayer
           attribution={attribution}
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          url={url.ignPlan}
 
           // url="https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
           // subdomains={['mt1','mt2','mt3']}
@@ -171,10 +203,11 @@ function App() {
         <HighlightTrace tracks={tracks} selectedTrack={selectedTrack} hoverTrack={hoverTrack}/>
       </MapContainer>
 
-      <div>
+      <div class="track-list">
         <GPXName tracks={tracks} setSelectedTrack={setSelectedTrack} setHoverTrack={setHoverTrack}/>
       </div>
     </div>
+    </>
   )
 
 }
