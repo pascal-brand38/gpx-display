@@ -124,23 +124,27 @@ function App() {
 
   useEffect(() => {
     const asyncFunc = async () => {
-      const tracks = await fetchTracks()
-      setTracks(tracks)
+      try {
+        const tracks = await fetchTracks()
+        setTracks(tracks)
 
-      let latMin = tracks[0].points[0].lat
-      let latMax = latMin
-      let lonMin = tracks[0].points[0].lon
-      let lonMax = lonMin
+        let latMin = tracks[0].points[0].lat
+        let latMax = latMin
+        let lonMin = tracks[0].points[0].lon
+        let lonMax = lonMin
 
-      tracks.forEach(track => {
-        track.points.forEach(p => {
-          latMin = Math.min(latMin, p.lat)
-          latMax = Math.max(latMax, p.lat)
-          lonMin = Math.min(lonMin, p.lon)
-          lonMax = Math.max(lonMax, p.lon)
+        tracks.forEach(track => {
+          track.points.forEach(p => {
+            latMin = Math.min(latMin, p.lat)
+            latMax = Math.max(latMax, p.lat)
+            lonMin = Math.min(lonMin, p.lon)
+            lonMax = Math.max(lonMax, p.lon)
+          })
         })
-      })
-      setCenter([(latMin + latMax)/2, (lonMin + lonMax)/2])
+        setCenter([(latMin + latMax)/2, (lonMin + lonMax)/2])
+      } catch {
+        setCenter([45.167320, 5.808467])
+      }
     }
 
     asyncFunc();
