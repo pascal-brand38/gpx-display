@@ -13,9 +13,12 @@ function main() {
       console.log(gpx.tracks[0])
       const gpxTrack = gpx.tracks[0]
 
-      const track = {}
-      track.name = gpxTrack.name
-      track.points = gpxTrack.points
+      const track = {
+        meta: {}
+      }
+      track.meta.name = gpxTrack.name
+      track.meta.startTime = gpxTrack.points[0].time
+      track.points = gpxTrack.points.map(point => [ point.lat, point.lon, point.ele, point.time])
 
       tracks.push(track)
     }
