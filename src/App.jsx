@@ -68,7 +68,6 @@ function HighlightTrace({tracks, selectedTrack, hoverTrack}) {
     if (selectedTrack < tracks.length) {
       results.push(<Polyline key={0} positions={[tracks[selectedTrack].points]} color={'blue'} smoothFactor={2} />)
     }
-    console.log(selectedTrack, hoverTrack)
     if ((hoverTrack < tracks.length) && (hoverTrack !== selectedTrack)) {
       results.push(<Polyline key={1} positions={[tracks[hoverTrack].points]} color={'green'} smoothFactor={2} />)
     }
@@ -131,7 +130,7 @@ function App() {
   // console.log(str)
 
   const [ tracks, setTracks ] = useState([])    // all the tracks. Loaded in useEffect
-  const [ center, setCenter ] = useState([])
+  const [ bounds, setBounds ] = useState(undefined)
   const [ selectedTrack, setSelectedTrack ] = useState(0)
   const [ hoverTrack, setHoverTrack ] = useState(0)
 
@@ -154,9 +153,11 @@ function App() {
             lonMax = Math.max(lonMax, p.lon)
           })
         })
-        setCenter([(latMin + latMax)/2, (lonMin + lonMax)/2])
+        // setCenter([(latMin + latMax)/2, (lonMin + lonMax)/2])
+        setBounds([[latMin, lonMin], [latMax, lonMax]])
       } catch {
-        setCenter([45.167320, 5.808467])
+        // setCenter([45.167320, 5.808467])
+        setBounds([[51.096106, -5.925042], [41.359701, 9.851325]])
       }
     }
 
@@ -172,7 +173,7 @@ function App() {
   //   return null;
   // }
 
-  if (center.length === 0) {
+  if (bounds === undefined) {
     return <></>
   }
 
@@ -202,10 +203,11 @@ function App() {
 
     openstreetmap: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
   }
+
   return (
     <>
     <div className="main-grid">
-      <MapContainer style={{height: "100vh", width: "100%"}} center={center}  zoom={9} scrollWheelZoom={true}  >
+      <MapContainer style={{height: "100vh", width: "100%"}} scrollWheelZoom={true} bounds={bounds} >
         {/* <ChangeView center={center} zoom={9} /> */}
         <TileLayer
           attribution={attribution}
