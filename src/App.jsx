@@ -53,7 +53,7 @@ function GPXName({tracks, setSelectedTrack, setHoverTrack}) {
       tracks.map((track, index) => {
         return (
           <div>
-            <button key={index} onClick={()=>setSelectedTrack(index)} onMouseOver={()=>setHoverTrack(index)}> {track.name} </button>
+            <button key={index} onClick={()=>setSelectedTrack(index)} onMouseOver={()=>setHoverTrack(index)}> {track.meta.name} </button>
           </div>
         )
       })
@@ -85,11 +85,24 @@ async function fetchTracks()  {
   const isPause = (point) => ((point.speed===undefined) || (point.speed<5))
   const x = await fetch('./private/all.json')
   const r = await x.text()
-  let tracks = JSON.parse(r)
+  let tracksInternal = JSON.parse(r)
+
+  let tracks = tracksInternal.map(t => {
+    return {
+      meta: t.meta,
+      points: t.points.map(point => {
+        return {
+          lat: point[0],
+          lon: point[1],
+          ele: point[2],
+          epoch: point[3] + t.meta.epoch,
+        }
+      }),
+    }
+  })
 
   // filter tracks
   tracks.forEach(track => {
-    track.points.forEach(point => point.epoch = DateTime.fromISO(point.time).toSeconds())
     track.points.forEach((point, index) => {
       if (index > 0) {
         const prev = track.points[index-1]
@@ -196,7 +209,7 @@ function App() {
         {/* <ChangeView center={center} zoom={9} /> */}
         <TileLayer
           attribution={attribution}
-          url={url.ignPlan}
+          url={url.openstreetmap}
 
           // url="https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
           // subdomains={['mt1','mt2','mt3']}
@@ -207,7 +220,7 @@ function App() {
         <HighlightTrace tracks={tracks} selectedTrack={selectedTrack} hoverTrack={hoverTrack}/>
       </MapContainer>
 
-      <div class="track-list">
+      <div className="track-list">
         <GPXName tracks={tracks} setSelectedTrack={setSelectedTrack} setHoverTrack={setHoverTrack}/>
       </div>
     </div>
