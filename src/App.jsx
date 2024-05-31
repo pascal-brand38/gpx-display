@@ -1,14 +1,14 @@
-import { useState, useRef, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import { MapContainer, TileLayer, Polyline, Marker, Popup, Tooltip, useMapEvents, useMap } from 'react-leaflet'
-// import 'leaflet/dist/leaflet.css';
-//import fs from 'fs'
-import "leaflet/dist/leaflet.css";
-import { DateTime } from 'luxon'
+// Copyright (c) Pascal Brand
+// MIT License
 
-const attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> | Pascal Brand'
+import { useState, useRef, useEffect } from 'react'
+import './App.css'
+
+import { Menu } from './components/Menu';
+import { Description } from './components/Description';
+import { Map } from './components/Map';
+import { List } from './components/List';
+
 
 
 // Distance between 2 gps points, from
@@ -35,50 +35,8 @@ function getDistanceInKm(p1, p2) {
   return getDistanceFromLatLonInKm(p1.lat, p1.lon, p2.lat, p2.lon)
 }
 
-function GPXTrace({tracks}) {
-  let traces = []
-  tracks.forEach((track, index) => {
-    traces.push(<Polyline key={index} positions={[track.points]} color={'red'} smoothFactor={2}  />)
-    // track.pauses.forEach((pause, i) => {
-    //   traces.push(<Marker key={i} position={ pause } ></Marker>)
-    // });
-  })
-  return traces
-}
-
-function GPXName({tracks, setSelectedTrack, setHoverTrack}) {
-  return (
-    <div>
-    {
-      tracks.map((track, index) => {
-        return (
-          <div>
-            <button key={index} onClick={()=>setSelectedTrack(index)} onMouseOver={()=>setHoverTrack(index)}> {track.meta.name} </button>
-          </div>
-        )
-      })
-    }
-    </div>
-  )
-}
-
-function HighlightTrace({tracks, selectedTrack, hoverTrack}) {
-  let results = []
-  if (tracks.length > 0) {
-    if (selectedTrack < tracks.length) {
-      results.push(<Polyline key={0} positions={[tracks[selectedTrack].points]} color={'blue'} smoothFactor={2} />)
-    }
-    if ((hoverTrack < tracks.length) && (hoverTrack !== selectedTrack)) {
-      results.push(<Polyline key={1} positions={[tracks[hoverTrack].points]} color={'green'} smoothFactor={2} />)
-    }
-
-    return results
-  }
-}
 
 
-
-// https://www.npmjs.com/package/react-files
 
 async function fetchTracks()  {
   const isPause = (point) => ((point.speed===undefined) || (point.speed<5))
@@ -177,54 +135,26 @@ function App() {
     return <></>
   }
 
-  const url = {
-    // https://geoservices.ign.fr/documentation/services/services-deprecies/affichage-wmts/leaflet-et-wmts
-    // https://data.geopf.fr/private/wms-r?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities&apikey=ign_scan_ws
-    // https://wxs.ign.fr/cartes/geoportail/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities
-    ignPlan: "https://data.geopf.fr/wmts?" +
-      "&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0" +
-      "&STYLE=normal" +
-      "&TILEMATRIXSET=PM" +
-      "&FORMAT=image/png" +
-      "&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2" +
-      "&TILEMATRIX={z}" +
-      "&TILEROW={y}" +
-      "&TILECOL={x}",
-
-    ignSat: "https://data.geopf.fr/wmts?" +
-      "&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0" +
-      "&STYLE=normal" +
-      "&TILEMATRIXSET=PM" +
-      "&FORMAT=image/jpeg" +
-      "&LAYER=ORTHOIMAGERY.ORTHOPHOTOS" +
-      "&TILEMATRIX={z}" +
-      "&TILEROW={y}" +
-      "&TILECOL={x}",
-
-    openstreetmap: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-  }
 
   return (
     <>
     <div className="main-grid">
-      <MapContainer style={{height: "100vh", width: "100%"}} scrollWheelZoom={true} bounds={bounds} >
-        {/* <ChangeView center={center} zoom={9} /> */}
-        <TileLayer
-          attribution={attribution}
-          url={url.openstreetmap}
-
-          // url="https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
-          // subdomains={['mt1','mt2','mt3']}
-
-        />
-
-        <GPXTrace tracks={tracks}/>
-        <HighlightTrace tracks={tracks} selectedTrack={selectedTrack} hoverTrack={hoverTrack}/>
-      </MapContainer>
-
-      <div className="track-list">
-        <GPXName tracks={tracks} setSelectedTrack={setSelectedTrack} setHoverTrack={setHoverTrack}/>
+      <div className='cell-menu'>
+        <Menu />
       </div>
+
+      <div className='cell-map'>
+        <Map bounds={bounds} tracks={tracks} selectedTrack={selectedTrack} hoverTrack={hoverTrack}/>
+      </div>
+
+      <div className="cell-list">
+        <List tracks={tracks} setSelectedTrack={setSelectedTrack} setHoverTrack={setHoverTrack}/>
+      </div>
+
+      <div className='cell-description'>
+        <Description />
+      </div>
+
     </div>
     </>
   )

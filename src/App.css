@@ -3,12 +3,33 @@
 
 .main-grid {
   width: 100%;
+  height: 100vh;
+
   display: grid;
-  grid-template-columns: 3fr 1fr;
+  /* grid-template-columns: minmax(0, 3fr) minmax(0, 1fr); */
+  grid-template:
+      "cell-menu cell-menu" min-content
+      "cell-map cell-list" 1fr    /* height = min-content to fit the search */
+      "cell-map cell-description" 1fr / 3fr 1fr;  /* height of the code = 1fr  -  width of the grid is 1fr 1fr 1fr 1fr */
 }
 
-.track-list {
-  height: 50vh;
-  background-color: gray;
+.cell-menu {
+  grid-area: cell-menu;
+  background-color: lightgreen;
+}
+
+.cell-map {
+  grid-area: cell-map;
+}
+
+.cell-list {
+  grid-area: cell-list;
+  background-color: lightblue;
   overflow-y: scroll;
+
+}
+
+.cell-description {
+  grid-area: cell-description;
+  background-color: lightcoral;
 }
