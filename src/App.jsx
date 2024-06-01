@@ -3,6 +3,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import './App.css'
+import { initializeApp } from "firebase/app";
 
 import { Menu } from './components/Menu';
 import { Description } from './components/Description';
@@ -86,14 +87,14 @@ function App() {
 
   // const str = fs.readFileSync('C:\\Users\\pasca\\Downloads\\activity_allemans_levignac_2ePyKv0W9XA8eFYoEL8tlEXSA01.gpx')
   // console.log(str)
-
+  const [app, setApp] = useState(undefined)
   const [ tracks, setTracks ] = useState([])    // all the tracks. Loaded in useEffect
   const [ bounds, setBounds ] = useState(undefined)
   const [ selectedTrack, setSelectedTrack ] = useState(0)
   const [ hoverTrack, setHoverTrack ] = useState(0)
 
   useEffect(() => {
-    const asyncFunc = async () => {
+    const getTracks = async () => {
       try {
         const tracks = await fetchTracks()
         setTracks(tracks)
@@ -119,7 +120,24 @@ function App() {
       }
     }
 
-    asyncFunc();
+    const initFirebase = async() => {
+      const firebaseConfig = {
+        apiKey: "AIzaSyBvfmLzBBH4TQxYRsJ5h_8AN706D92Fv_8",
+        authDomain: "gpx-display-24070.firebaseapp.com",
+        projectId: "gpx-display-24070",
+        storageBucket: "gpx-display-24070.appspot.com",
+        messagingSenderId: "1002894159234",
+        appId: "1:1002894159234:web:4f878c54f3280975d8b39b"
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      setApp(app)
+      console.log('Firebase initialized')
+    }
+
+    getTracks()
+    initFirebase()
   }, [])
 
   // from https://stackoverflow.com/questions/64665827/react-leaflet-center-attribute-does-not-change-when-the-center-state-changes
@@ -140,7 +158,7 @@ function App() {
     <>
     <div className="main-grid">
       <div className='cell-menu'>
-        <Menu />
+        <Menu app={app} />
       </div>
 
       <div className='cell-map'>

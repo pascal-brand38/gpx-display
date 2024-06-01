@@ -1,0 +1,42 @@
+// Copyright (c) Pascal Brand
+// MIT License
+
+.menu {
+  margin: 1rem;
+
+  form {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 2fr 2fr 1fr 1fr 2fr;
+  }
+
+  .email, .password {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
+
+    .label {
+      display: block;
+      margin: auto;
+    }
+    input {
+      flex-grow: 1;
+    }
+  }
+
+  button {
+    color: white;
+    background-color: darkblue;
+    border-radius: 5px;
+    font-weight: 900;
+    display: block;
+    padding: 5px;
+  }
+
+  button:disabled {
+    background-color: lightgray;
+    font-style: italic ;
+  }
+
+}

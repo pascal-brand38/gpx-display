@@ -1,14 +1,16 @@
 // Copyright (c) Pascal Brand
 // MIT License
 
+import './List.scss'
+
 function List({tracks, setSelectedTrack, setHoverTrack}) {
   return (
-    <div>
+    <div className='list'>
     {
       tracks.map((track, index) => {
         return (
-          <div>
-            <button key={index} onClick={()=>setSelectedTrack(index)} onMouseOver={()=>setHoverTrack(index)}> {track.meta.name} </button>
+          <div key={index}>
+            <button onClick={()=>setSelectedTrack(index)} onMouseOver={()=>setHoverTrack(index)}> {track.meta.name} </button>
           </div>
         )
       })

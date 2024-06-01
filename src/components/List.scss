@@ -1,0 +1,31 @@
+// Copyright (c) Pascal Brand
+// MIT License
+
+.list {
+  button {
+    margin: .5rem 1rem;
+    width: calc(100% - 2rem);
+    overflow-wrap: break-word;
+
+    border-radius: 8px;
+    border: 2px solid black;
+    padding: 0.6em 1.2em;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color 0.25s;
+  }
+
+  button:hover {
+    border-color: #646cff;
+  }
+
+  button:focus,
+  button:focus-visible {
+    border-color: limegreen;
+  }
+
+  .button-layers-list {
+    background-color: lightgray;
+  }
+}

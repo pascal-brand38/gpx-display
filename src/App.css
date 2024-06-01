@@ -15,7 +15,7 @@
 
 .cell-menu {
   grid-area: cell-menu;
-  background-color: lightgreen;
+  background-color: lightblue;
 }
 
 .cell-map {
