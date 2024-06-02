@@ -1,12 +1,28 @@
 // Copyright (c) Pascal Brand
 // MIT License
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { getStorage, ref, uploadBytes, uploadString } from "firebase/storage";
+import { getStorage, ref, uploadBytes, uploadString, getBlob } from "firebase/storage";
 
 import './Menu.scss'
 
+/*
+        const filename = 'test.txt'
+        const storage = getStorage();
+        const storageRef = ref(storage, `users/${userCredential.user.uid}/${filename}`);
+        return getBlob(storageRef)
+        })
+      .then((blob) => blob.text())
+      .then(text => console.log(text))
+      .catch((error) => {
+        // check https://firebase.google.com/docs/storage/web/download-files?hl=fr
+        // and https://firebase.google.com/docs/storage/web/handle-errors
+        console.log(`STORAGE ERROR ${error}`)
+
+
+      })
+*/
 
 function Sign() {
   // States for registration
@@ -42,9 +58,7 @@ function Sign() {
       });
   }
 
-  const handleSignin = async (e) => {
-    e.preventDefault();
-
+  const signIn = async (email, password) => {
     const auth = getAuth();
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
@@ -58,9 +72,12 @@ function Sign() {
       });
   }
 
+  const handleSignin = async (e) => {
+    e.preventDefault();
+    signIn(email, password)
+  }
+
   const handleUploadGPX = async (e) => {
-    // TOOD: not re-run when same file is selected
-    // TODO: UTF8 is wrong?
     // https://firebase.google.com/docs/storage/web/upload-files?hl=fr
     e.preventDefault();
     const filename = e.target.files[0].name
@@ -68,23 +85,20 @@ function Sign() {
     const storage = getStorage();
     const storageRef = ref(storage, `users/${userCredential.user.uid}/${filename}`);
 
-
-    /*
-    const text = await file.text();
-    console.log(text)
-    uploadString(storageRef, text).then((snapshot) => {
-      console.log('Uploaded a blob or file!');
-      console.log(snapshot)
-    });
-    */
     uploadBytes(storageRef, file).then((snapshot) => {
-      console.log('Uploaded a blob or file!');
-      console.log(snapshot)
+      console.log('Uploaded');
     });
 
     console.log(userCredential)
   }
 
+  // temporary, to speed-up tests
+  // remove it in production
+  useEffect(() => {
+    setEmail('toto@titi.fr');
+    setPassword('tototo');
+    signIn('toto@titi.fr', 'tototo')
+  }, [])
 
   return (
     <div className="menu">
@@ -118,11 +132,10 @@ function Sign() {
           { message }
         </div>
 
-        { /* should be a button if possible to disable it */ }
-        <div className='button' disabled={userCredential===undefined}>
-          <label htmlFor="upload_gpx">Upload GPX</label>
-          <input disabled={userCredential===undefined} style={{display:'none'}} type="file" id="upload_gpx" name="upload_gpx"  onChange={handleUploadGPX} />
-        </div>
+        { /* https://stackoverflow.com/questions/39484895/how-to-allow-input-type-file-to-select-the-same-file-in-react-component
+             onClick event is used to upload the same file several times */ }
+        <label htmlFor="upload_gpx" className={'button' + (userCredential===undefined ? ' button-disabled' : '')} > Upload GPX </label>
+        <input style={{display:'none'}} type="file" id="upload_gpx" name="upload_gpx" onChange={handleUploadGPX} onClick={(e) => e.target.value=null}/>
       </form>
 
     </div>
