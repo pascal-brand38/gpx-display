@@ -2,8 +2,8 @@
 // MIT License
 
 import { useState, useEffect } from 'react'
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { getStorage, ref, uploadBytes, uploadString, getBlob } from "firebase/storage";
+import authenticate from '../hooks/authenticate';
 
 import './Menu.scss'
 
@@ -31,50 +31,14 @@ function Sign() {
   const [message, setMessage] = useState("");
   const [userCredential, setUserCredential] = useState(undefined)
 
-  // Handling the email change
-  const handleEmail = (e) => {
-    setEmail(e.target.value);
-  };
-
-  // Handling the password change
-  const handlePassword = (e) => {
-    setPassword(e.target.value);
-  };
-
   // Handling the form submission
   const handleSignup = async (e) => {
     e.preventDefault();
-
-    const auth = getAuth();
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        setMessage('Hello ' + userCredential.user.email)
-        setUserCredential(userCredential)
-      })
-      .catch((error) => {
-        console.log('SIGN UP ERROR:', error)
-        setMessage(`Signup FAILED`)
-        setUserCredential(undefined)
-      });
+    authenticate.signUp(email, password, setEmail, setPassword, setMessage, setUserCredential)
   }
-
-  const signIn = async (email, password) => {
-    const auth = getAuth();
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        setMessage('Hello ' + userCredential.user.email)
-        setUserCredential(userCredential)
-      })
-      .catch((error) => {
-        console.log('SIGN IN ERROR:', error)
-        setMessage(`Signin FAILED`)
-        setUserCredential(undefined)
-      });
-  }
-
   const handleSignin = async (e) => {
     e.preventDefault();
-    signIn(email, password)
+    authenticate.signIn(email, password, setEmail, setPassword, setMessage, setUserCredential)
   }
 
   const handleUploadGPX = async (e) => {
@@ -92,12 +56,9 @@ function Sign() {
     console.log(userCredential)
   }
 
-  // temporary, to speed-up tests
-  // remove it in production
+  // temporary, to speed-up tests - remove it in production
   useEffect(() => {
-    setEmail('toto@titi.fr');
-    setPassword('tototo');
-    signIn('toto@titi.fr', 'tototo')
+    authenticate.signIn('toto@titi.fr', 'tototo', setEmail, setPassword, setMessage, setUserCredential)
   }, [])
 
   return (
@@ -106,7 +67,7 @@ function Sign() {
         <div className='email'>
           <label>Email</label>
           <input
-            onChange={handleEmail}
+            onChange={(e) => setEmail(e.target.value)}
             value={email}
             type="email"
           />
@@ -115,7 +76,7 @@ function Sign() {
         <div className='password'>
           <label>Password</label>
           <input
-            onChange={handlePassword}
+            onChange={(e) => setPassword(e.target.value)}
             value={password}
             type="password"
           />

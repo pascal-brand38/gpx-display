@@ -29,6 +29,7 @@
     font-size: 1rem;
     color: white;
     background-color: darkblue;
+    border: 2px solid darkblue;
     border-radius: 5px;
     font-weight: 900;
     display: block;
@@ -37,7 +38,13 @@
 
   button:disabled, .button-disabled {
     background-color: lightgray;
-    font-style: italic ;
+    border: 2px solid darkgray;
+    pointer-events: none;   // disable hover effect when the button is disabled
+  }
+
+
+  button:hover, .button:hover {
+    border: 2px solid green;
   }
 
 }
