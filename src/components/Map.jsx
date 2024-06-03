@@ -32,10 +32,10 @@ const url = {
   openstreetmap: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
 }
 
-function GPXTrace({tracks}) {
+function GPXTrace({ tracks }) {
   let traces = []
   tracks.forEach((track, index) => {
-    traces.push(<Polyline key={index} positions={[track.points]} color={'red'} smoothFactor={2}  />)
+    traces.push(<Polyline key={index} positions={[track.points]} color={'red'} smoothFactor={2} />)
     // track.pauses.forEach((pause, i) => {
     //   traces.push(<Marker key={i} position={ pause } ></Marker>)
     // });
@@ -43,7 +43,7 @@ function GPXTrace({tracks}) {
   return traces
 }
 
-function HighlightTrace({tracks, selectedTrack, hoverTrack}) {
+function HighlightTrace({ tracks, selectedTrack, hoverTrack }) {
   let results = []
   if (tracks.length > 0) {
     if (selectedTrack < tracks.length) {
@@ -58,7 +58,11 @@ function HighlightTrace({tracks, selectedTrack, hoverTrack}) {
 }
 
 
-function Map({bounds, tracks, selectedTrack, hoverTrack}) {
+function Map({ bounds, tracks, selectedTrack, hoverTrack }) {
+  if (bounds === undefined) {
+    return
+  }
+
   return (
     <>
       <MapContainer style={{ height: "100%", width: "100%" }} scrollWheelZoom={true} bounds={bounds} >
@@ -73,5 +77,6 @@ function Map({bounds, tracks, selectedTrack, hoverTrack}) {
     </>
   )
 }
+
 
 export { Map }

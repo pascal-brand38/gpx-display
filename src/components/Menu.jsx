@@ -4,27 +4,11 @@
 import { useState, useEffect } from 'react'
 import { getStorage, ref, uploadBytes, uploadString, getBlob } from "firebase/storage";
 import authenticate from '../hooks/authenticate';
+import storage from '../hooks/storage';
 
 import './Menu.scss'
 
-/*
-        const filename = 'test.txt'
-        const storage = getStorage();
-        const storageRef = ref(storage, `users/${userCredential.user.uid}/${filename}`);
-        return getBlob(storageRef)
-        })
-      .then((blob) => blob.text())
-      .then(text => console.log(text))
-      .catch((error) => {
-        // check https://firebase.google.com/docs/storage/web/download-files?hl=fr
-        // and https://firebase.google.com/docs/storage/web/handle-errors
-        console.log(`STORAGE ERROR ${error}`)
-
-
-      })
-*/
-
-function Sign() {
+function Sign({setTracks, setBounds}) {
   // States for registration
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -60,6 +44,13 @@ function Sign() {
   useEffect(() => {
     authenticate.signIn('toto@titi.fr', 'tototo', setEmail, setPassword, setMessage, setUserCredential)
   }, [])
+
+  useEffect(() => {
+    // load all.json file to have all the tracks
+    if (userCredential !== undefined) {
+      storage.fetchTracks(userCredential, setTracks, setBounds)
+    }
+  }, [userCredential])
 
   return (
     <div className="menu">
@@ -105,7 +96,7 @@ function Sign() {
 
 
 // app is undefined till the firebase application is initialized, which is required to authenticate
-function Menu({app}) {
+function Menu({app, setTracks, setBounds}) {
   if (app === undefined) {
     return (
       <div style={{textAlign:"center"}}>
@@ -116,7 +107,7 @@ function Menu({app}) {
   } else {
     return (
       <div style={{textAlign:"center"}}>
-        <Sign />
+        <Sign setTracks={setTracks} setBounds={setBounds} />
       </div>
     )
   }
