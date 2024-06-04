@@ -2,13 +2,13 @@
 // MIT License
 
 import { useState, useEffect } from 'react'
-import { getStorage, ref, uploadBytes, uploadString, getBlob } from "firebase/storage";
 import authenticate from '../hooks/authenticate';
 import storage from '../hooks/storage';
+import convert from '../hooks/convert';
 
 import './Menu.scss'
 
-function Sign({setTracks, setBounds}) {
+function Sign({tracks, setTracks, setBounds}) {
   // States for registration
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,15 +29,14 @@ function Sign({setTracks, setBounds}) {
     // https://firebase.google.com/docs/storage/web/upload-files?hl=fr
     e.preventDefault();
     const filename = e.target.files[0].name
-    const file = e.target.files.item(0)
-    const storage = getStorage();
-    const storageRef = ref(storage, `users/${userCredential.user.uid}/${filename}`);
-
-    uploadBytes(storageRef, file).then((snapshot) => {
-      console.log('Uploaded');
-    });
-
-    console.log(userCredential)
+    const blob = e.target.files.item(0)
+    storage.uploadBlob(userCredential, filename, blob)
+    blob.text().then(gpxXml => {
+      const track = convert.gpxToTrack(gpxXml)
+      tracks.push(track)
+      // setTracks(tracks) does not rerender as tracks is not changed (still an array at the same address)
+      setTracks([...tracks])
+    })
   }
 
   // temporary, to speed-up tests - remove it in production
@@ -96,7 +95,7 @@ function Sign({setTracks, setBounds}) {
 
 
 // app is undefined till the firebase application is initialized, which is required to authenticate
-function Menu({app, setTracks, setBounds}) {
+function Menu({app, tracks, setTracks, setBounds}) {
   if (app === undefined) {
     return (
       <div style={{textAlign:"center"}}>
@@ -107,7 +106,7 @@ function Menu({app, setTracks, setBounds}) {
   } else {
     return (
       <div style={{textAlign:"center"}}>
-        <Sign setTracks={setTracks} setBounds={setBounds} />
+        <Sign tracks={tracks} setTracks={setTracks} setBounds={setBounds} />
       </div>
     )
   }

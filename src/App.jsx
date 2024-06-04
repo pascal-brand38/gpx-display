@@ -55,11 +55,14 @@ function App() {
   //   return null;
   // }
 
+  console.log('IN APP')
+  console.log(tracks)
+
   return (
     <>
     <div className="main-grid">
       <div className='cell-menu'>
-        <Menu app={app} setTracks={setTracks} setBounds={setBounds}/>
+        <Menu app={app} tracks={tracks} setTracks={setTracks} setBounds={setBounds}/>
       </div>
 
       <div className='cell-map'>
