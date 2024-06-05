@@ -53,7 +53,11 @@ function HighlightTrace({ tracks, selectedTrack, hoverTrack }) {
       results.push(<Polyline key={1} positions={[tracks[hoverTrack].points]} color={'green'} smoothFactor={2} />)
     }
 
-    return results
+    return (
+      <div>
+        {results}
+      </div>
+    )
   }
 }
 
