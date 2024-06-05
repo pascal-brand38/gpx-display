@@ -8,7 +8,7 @@ import convert from '../hooks/convert';
 
 import './Menu.scss'
 
-function Sign({tracks, setTracks, setBounds}) {
+function Sign({tracks, setTracks, setBounds, setSelectedTrack, setHoverTrack}) {
   // States for registration
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -59,6 +59,8 @@ function Sign({tracks, setTracks, setBounds}) {
     // load all.json file to have all the tracks
     if (userCredential !== undefined) {
       storage.fetchTracks(userCredential, setTracks, setBounds)
+      setSelectedTrack(undefined)
+      setHoverTrack(undefined)
     }
   }, [userCredential])
 
@@ -106,7 +108,7 @@ function Sign({tracks, setTracks, setBounds}) {
 
 
 // app is undefined till the firebase application is initialized, which is required to authenticate
-function Menu({app, tracks, setTracks, setBounds}) {
+function Menu({app, tracks, setTracks, setBounds, setSelectedTrack, setHoverTrack}) {
   if (app === undefined) {
     return (
       <div style={{textAlign:"center"}}>
@@ -117,7 +119,7 @@ function Menu({app, tracks, setTracks, setBounds}) {
   } else {
     return (
       <div style={{textAlign:"center"}}>
-        <Sign tracks={tracks} setTracks={setTracks} setBounds={setBounds} />
+        <Sign tracks={tracks} setTracks={setTracks} setBounds={setBounds} setSelectedTrack={setSelectedTrack} setHoverTrack={setHoverTrack}/>
       </div>
     )
   }

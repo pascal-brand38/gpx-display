@@ -67,6 +67,8 @@ function gpxToTrack(gpxXmlText, gpxFilename) {
       startTimeStr: gpxTrack.points[0].time.toISOString(),
       epoch: DateTime.fromISO(gpxTrack.points[0].time.toISOString()).toSeconds(),
       gpxFilename: gpxFilename,
+      distance: undefined,
+      startDate: DateTime.fromISO(gpxTrack.points[0].time.toISOString()),
     }
   }
 
@@ -88,12 +90,21 @@ function gpxToTrack(gpxXmlText, gpxFilename) {
   })
   track.points = track.points.filter(point => !isPause(point))
 
+  track.meta.distance = 0
+  track.points.forEach((point, index) => {
+    if (index > 0) {
+      const prev = track.points[index - 1]
+      track.meta.distance =  track.meta.distance + _getDistanceInKm(prev, point)
+    }
+  })
+  track.meta.distance = Math.round(track.meta.distance * 10) / 10
+
   return track
 }
 
 function jsonFormatToTracks(jsonFormat) {
   const tracks = jsonFormat.map(t => {
-    return {
+    let track = {
       meta: t.meta,
       points: t.points.map(point => {
         return {
@@ -104,6 +115,8 @@ function jsonFormatToTracks(jsonFormat) {
         }
       }),
     }
+    track.meta.startDate = DateTime.fromISO(t.meta.startDate)
+    return track
   })
   return tracks
 }

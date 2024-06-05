@@ -46,10 +46,10 @@ function GPXTrace({ tracks }) {
 function HighlightTrace({ tracks, selectedTrack, hoverTrack }) {
   let results = []
   if (tracks.length > 0) {
-    if (selectedTrack < tracks.length) {
+    if (selectedTrack !== undefined) {
       results.push(<Polyline key={0} positions={[tracks[selectedTrack].points]} color={'blue'} smoothFactor={2} />)
     }
-    if ((hoverTrack < tracks.length) && (hoverTrack !== selectedTrack)) {
+    if ((hoverTrack !== undefined) && (hoverTrack !== selectedTrack)) {
       results.push(<Polyline key={1} positions={[tracks[hoverTrack].points]} color={'green'} smoothFactor={2} />)
     }
 

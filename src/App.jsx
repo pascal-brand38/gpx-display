@@ -23,8 +23,8 @@ function App() {
   const [ app, setApp ] = useState(undefined)   // firebase initialization
   const [ tracks, setTracks ] = useState([])    // all the tracks. Loaded in useEffect
   const [ bounds, setBounds ] = useState(undefined)
-  const [ selectedTrack, setSelectedTrack ] = useState(0)
-  const [ hoverTrack, setHoverTrack ] = useState(0)
+  const [ selectedTrack, setSelectedTrack ] = useState(undefined)
+  const [ hoverTrack, setHoverTrack ] = useState(undefined)
 
   useEffect(() => {
     const initFirebase = async() => {
@@ -55,14 +55,11 @@ function App() {
   //   return null;
   // }
 
-  console.log('IN APP')
-  console.log(tracks)
-
   return (
     <>
     <div className="main-grid">
       <div className='cell-menu'>
-        <Menu app={app} tracks={tracks} setTracks={setTracks} setBounds={setBounds}/>
+        <Menu app={app} tracks={tracks} setTracks={setTracks} setBounds={setBounds} setSelectedTrack={setSelectedTrack} setHoverTrack={setHoverTrack}/>
       </div>
 
       <div className='cell-map'>

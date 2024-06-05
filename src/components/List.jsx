@@ -10,7 +10,18 @@ function List({tracks, setSelectedTrack, setHoverTrack}) {
       tracks.map((track, index) => {
         return (
           <div key={index}>
-            <button onClick={()=>setSelectedTrack(index)} onMouseOver={()=>setHoverTrack(index)}> {track.meta.name} </button>
+            <button
+              onClick={()=>setSelectedTrack(index)}
+              onMouseLeave={()=>setHoverTrack(undefined)}
+              onMouseOver={()=>setHoverTrack(index)}>
+                <div className='title'> {track.meta.name} </div>
+                <div className='summary'>
+                  {(track.meta.startDate) ? track.meta.startDate.toFormat('dd/MM/yyyy') : 'unknown'}
+                  {/* {track.meta.startDate} */}
+                  {} - {}
+                  {track.meta.distance}km
+                </div>
+            </button>
           </div>
         )
       })
