@@ -12,7 +12,8 @@
 //            name: "name of the track",
 //            startTimeStr: "start time, in ISO format",
 //            epoch: "epoch of the start time"
-//            gpxFilename: "gpx Filename in firebase storage"
+//            gpxFilename: "gpx Filename in firebase storage",
+//            bounds: [ [ latMin, longMin ], [ latMax, longMax ] ]
 //          },
 //          points: [
 //            // list of GPS points
@@ -69,10 +70,14 @@ function gpxToTrack(gpxXmlText, gpxFilename) {
       gpxFilename: gpxFilename,
       distance: undefined,
       startDate: DateTime.fromISO(gpxTrack.points[0].time.toISOString()),
+      bounds: undefined,
     }
   }
 
   track.points = gpxTrack.points.map(point => {
+    if (track.meta.bounds === undefined) {
+      track.meta.bounds = [ [ point.lat, point.lon], [ point.lat, point.lon] ]
+    }
     return {
       lat: point.lat,
       lon: point.lon,
@@ -80,6 +85,20 @@ function gpxToTrack(gpxXmlText, gpxFilename) {
       epoch: DateTime.fromISO(point.time.toISOString()).toSeconds(),
     }
   })
+
+  let latMin = track.points[0].lat
+  let latMax = latMin
+  let lonMin = track.points[0].lon
+  let lonMax = lonMin
+
+  track.points.forEach(p => {
+    latMin = Math.min(latMin, p.lat)
+    latMax = Math.max(latMax, p.lat)
+    lonMin = Math.min(lonMin, p.lon)
+    lonMax = Math.max(lonMax, p.lon)
+  })
+
+  track.meta.bounds = [[latMin, lonMin], [latMax, lonMax]]
 
   // filter this track
   track.points.forEach((point, index) => {

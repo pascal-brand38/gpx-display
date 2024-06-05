@@ -41,18 +41,16 @@ async function fetchTracks(userCredential, setTracks, setBounds)  {
     const tracks = convert.jsonFormatToTracks(jsonFormat)
     setTracks(tracks)
 
-    let latMin = tracks[0].points[0].lat
-    let latMax = latMin
-    let lonMin = tracks[0].points[0].lon
-    let lonMax = lonMin
+    let latMin = tracks[0].meta.bounds[0][0]
+    let latMax = tracks[0].meta.bounds[1][0]
+    let lonMin = tracks[0].meta.bounds[0][1]
+    let lonMax = tracks[0].meta.bounds[1][1]
 
     tracks.forEach(track => {
-      track.points.forEach(p => {
-        latMin = Math.min(latMin, p.lat)
-        latMax = Math.max(latMax, p.lat)
-        lonMin = Math.min(lonMin, p.lon)
-        lonMax = Math.max(lonMax, p.lon)
-      })
+      latMin = Math.min(latMin, track.meta.bounds[0][0])
+      latMax = Math.max(latMax, track.meta.bounds[1][0])
+      lonMin = Math.min(lonMin, track.meta.bounds[0][1])
+      lonMax = Math.max(lonMax, track.meta.bounds[1][1])
     })
     setBounds([[latMin, lonMin], [latMax, lonMax]])
   } catch {
