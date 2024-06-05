@@ -12,6 +12,7 @@
 //            name: "name of the track",
 //            startTimeStr: "start time, in ISO format",
 //            epoch: "epoch of the start time"
+//            gpxFilename: "gpx Filename in firebase storage"
 //          },
 //          points: [
 //            // list of GPS points
@@ -53,7 +54,7 @@ function _getDistanceInKm(p1, p2) {
 }
 
 
-function gpxToTrack(gpxXmlText) {
+function gpxToTrack(gpxXmlText, gpxFilename) {
   const isPause = (point) => ((point.speed===undefined) || (point.speed<5))
 
   let gpx = new gpxParser(); //Create gpxParser Object
@@ -65,6 +66,7 @@ function gpxToTrack(gpxXmlText) {
       name: gpxTrack.name,
       startTimeStr: gpxTrack.points[0].time.toISOString(),
       epoch: DateTime.fromISO(gpxTrack.points[0].time.toISOString()).toSeconds(),
+      gpxFilename: gpxFilename,
     }
   }
 

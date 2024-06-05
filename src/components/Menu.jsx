@@ -32,8 +32,15 @@ function Sign({tracks, setTracks, setBounds}) {
     const blob = e.target.files.item(0)
     storage.uploadBlob(userCredential, filename, blob)
     blob.text().then(gpxXml => {
-      const track = convert.gpxToTrack(gpxXml)
+      const track = convert.gpxToTrack(gpxXml, filename)
+
+      // remove duplicates
+      tracks = tracks.filter(t => t.meta.epoch !== track.meta.epoch)
       tracks.push(track)
+
+      // sort the tracks by start time
+      tracks.sort((a, b) => a.meta.epoch - b.meta.epoch)
+
       // setTracks(tracks) does not rerender as tracks is not changed (still an array at the same address)
       setTracks([...tracks])
 
