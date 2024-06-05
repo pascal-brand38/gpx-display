@@ -106,7 +106,27 @@ function jsonFormatToTracks(jsonFormat) {
   return tracks
 }
 
+function tracksToJsonFormat(tracks) {
+  const jsonFormat = tracks.map(t => {
+    return {
+      meta: t.meta,
+      points: t.points.map(point => {
+        return [
+          point.lat,
+          point.lon,
+          point.ele,
+          point.epoch - t.meta.epoch,
+        ]
+      }),
+    }
+  })
+  return jsonFormat
+}
+
 export default {
   gpxToTrack,
-  jsonFormatToTracks
+  jsonFormatToTracks,
+  tracksToJsonFormat,
 }
+
+// TODO: remove duplicate

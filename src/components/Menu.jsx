@@ -36,6 +36,10 @@ function Sign({tracks, setTracks, setBounds}) {
       tracks.push(track)
       // setTracks(tracks) does not rerender as tracks is not changed (still an array at the same address)
       setTracks([...tracks])
+
+      const jsonFormat = convert.tracksToJsonFormat(tracks)
+      const string = JSON.stringify(jsonFormat)
+      storage.uploadStringToUser(userCredential, storage.jsonFormatFilename, string)
     })
   }
 

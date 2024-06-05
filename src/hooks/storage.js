@@ -4,7 +4,7 @@
 import { getStorage, ref, uploadBytes, uploadString, getBlob } from "firebase/storage";
 import convert from "./convert";
 
-
+const jsonFormatFilename = 'all-tracks.json'
 
 // check https://firebase.google.com/docs/storage/web/download-files?hl=fr
 // and https://firebase.google.com/docs/storage/web/handle-errors
@@ -23,10 +23,19 @@ async function uploadBlob(userCredential, filename, blob) {
   });
 }
 
+async function uploadStringToUser(userCredential, filename, string) {
+  const storage = getStorage();
+  const storageRef = ref(storage, `users/${userCredential.user.uid}/${filename}`);
+
+  uploadString(storageRef, string).then((snapshot) => {
+    console.log('Uploaded');
+  });
+}
+
 
 async function fetchTracks(userCredential, setTracks, setBounds)  {
   try {
-    const blob = await downloadBlob(userCredential, 'all-tracks.json')
+    const blob = await downloadBlob(userCredential, jsonFormatFilename)
     const r = await blob.text()
     const jsonFormat = JSON.parse(r)
     const tracks = convert.jsonFormatToTracks(jsonFormat)
@@ -57,5 +66,7 @@ async function fetchTracks(userCredential, setTracks, setBounds)  {
 export default {
   downloadBlob,
   uploadBlob,
+  uploadStringToUser,
   fetchTracks,
+  jsonFormatFilename,
 }
