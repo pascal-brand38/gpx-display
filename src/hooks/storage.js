@@ -19,7 +19,7 @@ async function uploadBlob(userCredential, filename, blob) {
   const storageRef = ref(storage, `users/${userCredential.user.uid}/${filename}`);
 
   uploadBytes(storageRef, blob).then((snapshot) => {
-    console.log('Uploaded');
+    console.log(`Uploaded ${filename}`);
   });
 }
 
@@ -28,7 +28,7 @@ async function uploadStringToUser(userCredential, filename, string) {
   const storageRef = ref(storage, `users/${userCredential.user.uid}/${filename}`);
 
   uploadString(storageRef, string).then((snapshot) => {
-    console.log('Uploaded');
+    console.log(`Uploaded ${filename}`);
   });
 }
 

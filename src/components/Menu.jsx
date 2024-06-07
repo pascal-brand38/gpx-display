@@ -28,26 +28,30 @@ function Sign({tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrac
   const handleUploadGPX = async (e) => {
     // https://firebase.google.com/docs/storage/web/upload-files?hl=fr
     e.preventDefault();
-    const filename = e.target.files[0].name
-    const blob = e.target.files.item(0)
-    storage.uploadBlob(userCredential, filename, blob)
-    blob.text().then(gpxXml => {
-      const track = convert.gpxToTrack(gpxXml, filename)
+    console.log(e.target.files)
+    await Promise.all(
+      Array.from(e.target.files).map(async (file, index) => {
+        const filename = file.name
+        const blob = e.target.files.item(index)
+        storage.uploadBlob(userCredential, filename, blob)
+        const gpxXml = await blob.text()
+        const track = convert.gpxToTrack(gpxXml, filename)
 
-      // remove duplicates
-      tracks = tracks.filter(t => t.meta.epoch !== track.meta.epoch)
-      tracks.push(track)
+        // remove duplicates
+        tracks = tracks.filter(t => t.meta.epoch !== track.meta.epoch)
+        tracks.push(track)
+      })
+    )
 
-      // sort the tracks by start time
-      tracks.sort((a, b) => a.meta.epoch - b.meta.epoch)
+    // sort the tracks by start time
+    tracks.sort((a, b) => a.meta.epoch - b.meta.epoch)
 
-      // setTracks(tracks) does not rerender as tracks is not changed (still an array at the same address)
-      setTracks([...tracks])
+    // setTracks(tracks) does not rerender as tracks is not changed (still an array at the same address)
+    setTracks([...tracks])
 
-      const jsonFormat = convert.tracksToJsonFormat(tracks)
-      const string = JSON.stringify(jsonFormat)
-      storage.uploadStringToUser(userCredential, storage.jsonFormatFilename, string)
-    })
+    const jsonFormat = convert.tracksToJsonFormat(tracks)
+    const string = JSON.stringify(jsonFormat)
+    storage.uploadStringToUser(userCredential, storage.jsonFormatFilename, string)
   }
 
   // temporary, to speed-up tests - remove it in production
@@ -99,7 +103,7 @@ function Sign({tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrac
         { /* https://stackoverflow.com/questions/39484895/how-to-allow-input-type-file-to-select-the-same-file-in-react-component
              onClick event is used to upload the same file several times */ }
         <label htmlFor="upload_gpx" className={'button' + (userCredential===undefined ? ' button-disabled' : '')} > Upload GPX </label>
-        <input style={{display:'none'}} type="file" id="upload_gpx" name="upload_gpx" accept=".gpx" onChange={handleUploadGPX} onClick={(e) => e.target.value=null}/>
+        <input multiple style={{display:'none'}} type="file" id="upload_gpx" name="upload_gpx" accept=".gpx" onChange={handleUploadGPX} onClick={(e) => e.target.value=null}/>
       </form>
 
     </div>
