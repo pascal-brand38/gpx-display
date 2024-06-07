@@ -1,6 +1,8 @@
 // Copyright (c) Pascal Brand
 // MIT License
 
+import { useState, useRef, useEffect } from 'react'
+
 import { MapContainer, TileLayer, Polyline, Marker, Popup, Tooltip, useMapEvents, useMap } from 'react-leaflet'
 import "leaflet/dist/leaflet.css";
 
@@ -61,15 +63,38 @@ function HighlightTrace({ tracks, selectedTrack, hoverTrack }) {
   }
 }
 
+function GetBounds({setCurrentBounds}) {
+  const mMap = useMap();
 
-function Map({ bounds, tracks, selectedTrack, hoverTrack }) {
-  if (bounds === undefined) {
+  const getBounds = () => {
+    if (mMap !== null) {
+      const bounds = mMap.getBounds()
+      const sw = bounds.getSouthWest()
+      const ne = bounds.getNorthEast()
+      setCurrentBounds([ [sw.lat, sw.lng], [ne.lat, ne.lng] ])
+    }
+  }
+
+  useMapEvents({
+    moveend: getBounds,
+    //dragend: getBounds,
+    zoomend: getBounds,
+  })
+}
+
+function Map({ firstBounds, tracks, selectedTrack, hoverTrack, setCurrentBounds}) {
+  if (firstBounds === undefined) {
     return
   }
 
+  useEffect(() => {
+    setCurrentBounds(firstBounds)
+  }, [firstBounds])
+
   return (
     <>
-      <MapContainer style={{ height: "100%", width: "100%" }} scrollWheelZoom={true} bounds={bounds} >
+      <MapContainer style={{ height: "100%", width: "100%" }} scrollWheelZoom={true} bounds={firstBounds} >
+        <GetBounds setCurrentBounds={setCurrentBounds}/>
         <TileLayer
           attribution={attribution}
           url={url.openstreetmap}

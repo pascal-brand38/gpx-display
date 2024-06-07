@@ -8,7 +8,7 @@ import convert from '../hooks/convert';
 
 import './Menu.scss'
 
-function Sign({tracks, setTracks, setBounds, setSelectedTrack, setHoverTrack}) {
+function Sign({tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrack}) {
   // States for registration
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -58,7 +58,7 @@ function Sign({tracks, setTracks, setBounds, setSelectedTrack, setHoverTrack}) {
   useEffect(() => {
     // load all.json file to have all the tracks
     if (userCredential !== undefined) {
-      storage.fetchTracks(userCredential, setTracks, setBounds)
+      storage.fetchTracks(userCredential, setTracks, setFirstBounds)
       setSelectedTrack(undefined)
       setHoverTrack(undefined)
     }
@@ -99,7 +99,7 @@ function Sign({tracks, setTracks, setBounds, setSelectedTrack, setHoverTrack}) {
         { /* https://stackoverflow.com/questions/39484895/how-to-allow-input-type-file-to-select-the-same-file-in-react-component
              onClick event is used to upload the same file several times */ }
         <label htmlFor="upload_gpx" className={'button' + (userCredential===undefined ? ' button-disabled' : '')} > Upload GPX </label>
-        <input style={{display:'none'}} type="file" id="upload_gpx" name="upload_gpx" onChange={handleUploadGPX} onClick={(e) => e.target.value=null}/>
+        <input style={{display:'none'}} type="file" id="upload_gpx" name="upload_gpx" accept=".gpx" onChange={handleUploadGPX} onClick={(e) => e.target.value=null}/>
       </form>
 
     </div>
@@ -108,7 +108,7 @@ function Sign({tracks, setTracks, setBounds, setSelectedTrack, setHoverTrack}) {
 
 
 // app is undefined till the firebase application is initialized, which is required to authenticate
-function Menu({app, tracks, setTracks, setBounds, setSelectedTrack, setHoverTrack}) {
+function Menu({app, tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrack}) {
   if (app === undefined) {
     return (
       <div style={{textAlign:"center"}}>
@@ -119,7 +119,7 @@ function Menu({app, tracks, setTracks, setBounds, setSelectedTrack, setHoverTrac
   } else {
     return (
       <div style={{textAlign:"center"}}>
-        <Sign tracks={tracks} setTracks={setTracks} setBounds={setBounds} setSelectedTrack={setSelectedTrack} setHoverTrack={setHoverTrack}/>
+        <Sign tracks={tracks} setTracks={setTracks} setFirstBounds={setFirstBounds} setSelectedTrack={setSelectedTrack} setHoverTrack={setHoverTrack}/>
       </div>
     )
   }

@@ -20,11 +20,12 @@ function App() {
 
   // const str = fs.readFileSync('C:\\Users\\pasca\\Downloads\\activity_allemans_levignac_2ePyKv0W9XA8eFYoEL8tlEXSA01.gpx')
   // console.log(str)
-  const [ app, setApp ] = useState(undefined)   // firebase initialization
-  const [ tracks, setTracks ] = useState([])    // all the tracks. Loaded in useEffect
-  const [ bounds, setBounds ] = useState(undefined)
-  const [ selectedTrack, setSelectedTrack ] = useState(undefined)
-  const [ hoverTrack, setHoverTrack ] = useState(undefined)
+  const [ app, setApp ] = useState(undefined)                         // firebase initialization
+  const [ tracks, setTracks ] = useState([])                          // all the tracks, as a jsonFormat format
+  const [ selectedTrack, setSelectedTrack ] = useState(undefined)     // index of the selected track
+  const [ hoverTrack, setHoverTrack ] = useState(undefined)           // index of the hovered track
+  const [ firstBounds, setFirstBounds ] = useState(undefined)         // first bounds to be displayed
+  const [ currentBounds, setCurrentBounds ] = useState(undefined)     // the current bounds of the displayed map
 
   useEffect(() => {
     const initFirebase = async() => {
@@ -59,15 +60,15 @@ function App() {
     <>
     <div className="main-grid">
       <div className='cell-menu'>
-        <Menu app={app} tracks={tracks} setTracks={setTracks} setBounds={setBounds} setSelectedTrack={setSelectedTrack} setHoverTrack={setHoverTrack}/>
+        <Menu app={app} tracks={tracks} setTracks={setTracks} setFirstBounds={setFirstBounds} setSelectedTrack={setSelectedTrack} setHoverTrack={setHoverTrack}/>
       </div>
 
       <div className='cell-map'>
-        <Map bounds={bounds} tracks={tracks} selectedTrack={selectedTrack} hoverTrack={hoverTrack}/>
+        <Map firstBounds={firstBounds} tracks={tracks} selectedTrack={selectedTrack} hoverTrack={hoverTrack} setCurrentBounds={setCurrentBounds} />
       </div>
 
       <div className="cell-list">
-        <List tracks={tracks} setSelectedTrack={setSelectedTrack} setHoverTrack={setHoverTrack}/>
+        <List tracks={tracks} currentBounds={currentBounds} setSelectedTrack={setSelectedTrack} setHoverTrack={setHoverTrack}/>
       </div>
 
       <div className='cell-description'>
