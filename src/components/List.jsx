@@ -8,19 +8,19 @@ function List({tracks, currentBounds, setSelectedTrack, setHoverTrack}) {
     return
   }
 
-  // console.log(currentBounds)
+  const isTrackInside = (track, currentBounds) => {
+    const isInside = (value, min, max) => ((min <= value) && (value <= max))
+    return track.points.some(p =>
+      isInside(p.lat, currentBounds[0][0], currentBounds[1][0]) &&
+      isInside(p.lon, currentBounds[0][1], currentBounds[1][1])
+    )
+  }
 
-  const isInside = (value, min, max) => ((min <= value) && (value <= max))
   return (
     <div className='list'>
     {
       tracks.map((track, index) => {
-        let display = true
-        display = display && (isInside(track.meta.bounds[0][0], currentBounds[0][0], currentBounds[1][0]));
-        display = display && (isInside(track.meta.bounds[1][0], currentBounds[0][0], currentBounds[1][0]));
-        display = display && (isInside(track.meta.bounds[0][1], currentBounds[0][1], currentBounds[1][1]));
-        display = display && (isInside(track.meta.bounds[1][1], currentBounds[0][1], currentBounds[1][1]));
-        if (display) {
+        if (isTrackInside(track, currentBounds)) {
           return (
             <div key={index}>
               <button
