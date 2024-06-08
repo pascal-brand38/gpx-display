@@ -17,16 +17,11 @@
   }
 
   button:hover {
-    border-color: #646cff;
+    border-color: green;
   }
 
-  button:focus,
-  button:focus-visible {
-    border-color: limegreen;
-  }
-
-  .button-layers-list {
-    background-color: lightgray;
+  .selected {
+    border-color: blue;
   }
 
   .summary {

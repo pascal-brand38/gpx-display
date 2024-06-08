@@ -3,7 +3,7 @@
 
 import './List.scss'
 
-function List({tracks, currentBounds, setSelectedTrack, setHoverTrack}) {
+function List({tracks, currentBounds, selectedTrack, setSelectedTrack, setHoverTrack}) {
   if (currentBounds === undefined) {
     return
   }
@@ -21,9 +21,10 @@ function List({tracks, currentBounds, setSelectedTrack, setHoverTrack}) {
     {
       tracks.map((track, index) => {
         if (isTrackInside(track, currentBounds)) {
+          const addClass = ((index === selectedTrack) ? "selected" : "")
           return (
             <div key={index}>
-              <button
+              <button className={addClass}
                 onClick={()=>setSelectedTrack(index)}
                 onMouseLeave={()=>setHoverTrack(undefined)}
                 onMouseOver={()=>setHoverTrack(index)}>

@@ -68,7 +68,7 @@ function App() {
       </div>
 
       <div className="cell-list">
-        <List tracks={tracks} currentBounds={currentBounds} setSelectedTrack={setSelectedTrack} setHoverTrack={setHoverTrack}/>
+        <List tracks={tracks} currentBounds={currentBounds} selectedTrack={selectedTrack} setSelectedTrack={setSelectedTrack} setHoverTrack={setHoverTrack}/>
       </div>
 
       <div className='cell-description'>
