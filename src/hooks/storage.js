@@ -14,6 +14,12 @@ async function downloadBlob(userCredential, filename) {
   return getBlob(storageRef)
 }
 
+async function downloadPublicBlob(filename) {
+  const storage = getStorage();
+  const storageRef = ref(storage, `public/${filename}`);
+  return getBlob(storageRef)
+}
+
 async function uploadBlob(userCredential, filename, blob) {
   const storage = getStorage();
   const storageRef = ref(storage, `users/${userCredential.user.uid}/${filename}`);
@@ -26,6 +32,15 @@ async function uploadBlob(userCredential, filename, blob) {
 async function uploadStringToUser(userCredential, filename, string) {
   const storage = getStorage();
   const storageRef = ref(storage, `users/${userCredential.user.uid}/${filename}`);
+
+  uploadString(storageRef, string).then((snapshot) => {
+    console.log(`Uploaded ${filename}`);
+  });
+}
+
+async function uploadPublicString(filename, string) {
+  const storage = getStorage();
+  const storageRef = ref(storage, `public/${filename}`);
 
   uploadString(storageRef, string).then((snapshot) => {
     console.log(`Uploaded ${filename}`);
@@ -63,8 +78,10 @@ async function fetchTracks(userCredential, setTracks, setBounds)  {
 
 export default {
   downloadBlob,
+  downloadPublicBlob,
   uploadBlob,
   uploadStringToUser,
+  uploadPublicString,
   fetchTracks,
   jsonFormatFilename,
 }

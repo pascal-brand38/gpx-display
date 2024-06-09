@@ -33,7 +33,7 @@ import { DateTime } from 'luxon'
 
 // Distance between 2 gps points, from
 //     https://stackoverflow.com/questions/18883601/function-to-calculate-distance-between-two-coordinates
-function _getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
   const deg2rad = (deg) => deg * (Math.PI/180)
 
   var R = 6371; // Radius of the earth in km
@@ -51,7 +51,7 @@ function _getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
 
 
 function _getDistanceInKm(p1, p2) {
-  return _getDistanceFromLatLonInKm(p1.lat, p1.lon, p2.lat, p2.lon)
+  return getDistanceFromLatLonInKm(p1.lat, p1.lon, p2.lat, p2.lon)
 }
 
 
@@ -161,6 +161,6 @@ export default {
   gpxToTrack,
   jsonFormatToTracks,
   tracksToJsonFormat,
-}
 
-// TODO: remove duplicate
+  getDistanceFromLatLonInKm,
+}

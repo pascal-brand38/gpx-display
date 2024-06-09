@@ -2,6 +2,7 @@
 // MIT License
 
 import './List.scss'
+import city from '../hooks/city'
 
 function List({tracks, currentBounds, selectedTrack, setSelectedTrack, setHoverTrack}) {
   if (currentBounds === undefined) {
@@ -16,6 +17,25 @@ function List({tracks, currentBounds, selectedTrack, setSelectedTrack, setHoverT
     )
   }
 
+  const onClick = async (index) => {
+    setSelectedTrack(index)
+
+    await city.getGeonames()
+    const track = tracks[index]
+    city.filterGeonames(track.meta.bounds)
+    const cities = track.points.map((p, index) => city.getCity(p.lat, p.lon, ((index==0) || (index==track.points.length-1))))
+
+    let prev = undefined
+    cities.forEach(city => {
+      if ((city !== prev) && (city !== undefined)) {
+        prev = city
+        if (city !== undefined) {
+          console.log(city)
+        }
+      }
+    })
+  }
+
   return (
     <div className='list'>
     {
@@ -25,7 +45,7 @@ function List({tracks, currentBounds, selectedTrack, setSelectedTrack, setHoverT
           return (
             <div key={index}>
               <button className={addClass}
-                onClick={()=>setSelectedTrack(index)}
+                onClick={()=>onClick(index)}
                 onMouseLeave={()=>setHoverTrack(undefined)}
                 onMouseOver={()=>setHoverTrack(index)}>
                   <div className='title'> {track.meta.name} </div>
