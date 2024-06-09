@@ -30,6 +30,7 @@
 
 import gpxParser from 'gpxparser'
 import { DateTime } from 'luxon'
+import city from './city';
 
 // Distance between 2 gps points, from
 //     https://stackoverflow.com/questions/18883601/function-to-calculate-distance-between-two-coordinates
@@ -71,6 +72,7 @@ function gpxToTrack(gpxXmlText, gpxFilename) {
       distance: undefined,
       startDate: DateTime.fromISO(gpxTrack.points[0].time.toISOString()),
       bounds: undefined,
+      cities: [],
     }
   }
 
@@ -117,6 +119,19 @@ function gpxToTrack(gpxXmlText, gpxFilename) {
     }
   })
   track.meta.distance = Math.round(track.meta.distance * 10) / 10
+
+  city.filterGeonames(track.meta.bounds)
+  const cities = track.points.map((p, index) => city.getCity(p.lat, p.lon, ((index==0) || (index==track.points.length-1))))
+
+  let prev = undefined
+  cities.forEach(city => {
+    if ((city !== prev) && (city !== undefined)) {
+      prev = city
+      if (city !== undefined) {
+        track.meta.cities.push(city)
+      }
+    }
+  })
 
   return track
 }

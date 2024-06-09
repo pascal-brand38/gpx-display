@@ -72,7 +72,7 @@ function App() {
       </div>
 
       <div className='cell-description'>
-        <Description />
+        <Description tracks={tracks} selectedTrack={selectedTrack} />
       </div>
 
     </div>

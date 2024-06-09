@@ -24,6 +24,7 @@
 
 .cell-list {
   grid-area: cell-list;
+  border: 2px solid black;
   background-color: lightblue;
   overflow-y: scroll;
 
@@ -31,5 +32,7 @@
 
 .cell-description {
   grid-area: cell-description;
-  background-color: lightcoral;
+  border: 2px solid black;
+  background-color: lightblue;
+  overflow-y: scroll;
 }

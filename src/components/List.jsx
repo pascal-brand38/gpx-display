@@ -17,23 +17,10 @@ function List({tracks, currentBounds, selectedTrack, setSelectedTrack, setHoverT
     )
   }
 
-  const onClick = async (index) => {
+  const onClick = (index) => {
     setSelectedTrack(index)
-
-    await city.getGeonames()
     const track = tracks[index]
-    city.filterGeonames(track.meta.bounds)
-    const cities = track.points.map((p, index) => city.getCity(p.lat, p.lon, ((index==0) || (index==track.points.length-1))))
-
-    let prev = undefined
-    cities.forEach(city => {
-      if ((city !== prev) && (city !== undefined)) {
-        prev = city
-        if (city !== undefined) {
-          console.log(city)
-        }
-      }
-    })
+    console.log(track.meta.cities)
   }
 
   return (

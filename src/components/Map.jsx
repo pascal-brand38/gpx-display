@@ -83,13 +83,13 @@ function GetBounds({setCurrentBounds}) {
 }
 
 function Map({ firstBounds, tracks, selectedTrack, hoverTrack, setCurrentBounds}) {
-  if (firstBounds === undefined) {
-    return
-  }
-
   useEffect(() => {
     setCurrentBounds(firstBounds)
   }, [firstBounds])
+
+  if (firstBounds === undefined) {
+    return null
+  }
 
   return (
     <>

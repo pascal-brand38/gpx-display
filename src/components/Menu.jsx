@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import authenticate from '../hooks/authenticate';
 import storage from '../hooks/storage';
 import convert from '../hooks/convert';
+import city from '../hooks/city';
 
 import './Menu.scss'
 
@@ -28,7 +29,7 @@ function Sign({tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrac
   const handleUploadGPX = async (e) => {
     // https://firebase.google.com/docs/storage/web/upload-files?hl=fr
     e.preventDefault();
-    console.log(e.target.files)
+    await city.getGeonames()
     await Promise.all(
       Array.from(e.target.files).map(async (file, index) => {
         const filename = file.name
