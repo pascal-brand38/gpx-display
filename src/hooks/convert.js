@@ -66,14 +66,21 @@ function gpxToTrack(gpxXmlText, gpxFilename) {
   let track = {
     meta: {
       name: gpxTrack.name,
-      startTimeStr: gpxTrack.points[0].time.toISOString(),
-      epoch: DateTime.fromISO(gpxTrack.points[0].time.toISOString()).toSeconds(),
+      startTimeStr: undefined,
+      epoch: undefined,
       gpxFilename: gpxFilename,
       distance: undefined,
-      startDate: DateTime.fromISO(gpxTrack.points[0].time.toISOString()),
+      startDate: undefined,
       bounds: undefined,
       cities: [],
     }
+  }
+
+  if (gpxTrack.points[0].time) {
+    console.log(gpxTrack.points[0].time)
+    track.meta.startTimeStr = gpxTrack.points[0].time.toISOString()
+    track.meta.startDate = DateTime.fromISO(track.meta.startTimeStr)
+    track.meta.epoch = track.meta.startDate.toSeconds()
   }
 
   track.points = gpxTrack.points.map(point => {
@@ -84,7 +91,7 @@ function gpxToTrack(gpxXmlText, gpxFilename) {
       lat: point.lat,
       lon: point.lon,
       ele: point.ele,
-      epoch: DateTime.fromISO(point.time.toISOString()).toSeconds(),
+      epoch: (point.time ? DateTime.fromISO(point.time.toISOString()).toSeconds(): undefined),
     }
   })
 
@@ -103,13 +110,15 @@ function gpxToTrack(gpxXmlText, gpxFilename) {
   track.meta.bounds = [[latMin, lonMin], [latMax, lonMax]]
 
   // filter this track
-  track.points.forEach((point, index) => {
-    if (index > 0) {
-      const prev = track.points[index - 1]
-      point.speed = _getDistanceInKm(prev, point) / ((point.epoch - prev.epoch) / (60 * 60))
-    }
-  })
-  track.points = track.points.filter(point => !isPause(point))
+  if (track.meta.epoch !== undefined) {
+    track.points.forEach((point, index) => {
+      if (index > 0) {
+        const prev = track.points[index - 1]
+        point.speed = _getDistanceInKm(prev, point) / ((point.epoch - prev.epoch) / (60 * 60))
+      }
+    })
+    track.points = track.points.filter(point => !isPause(point))
+  }
 
   track.meta.distance = 0
   track.points.forEach((point, index) => {

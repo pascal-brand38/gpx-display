@@ -22,3 +22,5 @@ export { Description }
 
 
 // TODO: be able to click on a city and show it on the map
+// TODO: detect the heights, les cols
+// TODO: display elevation cumul
