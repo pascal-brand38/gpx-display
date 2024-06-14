@@ -4,47 +4,52 @@
 .menu {
   margin: 1rem;
 
-  form {
+  > form {
     display: grid;
     gap: 1rem;
-    grid-template-columns: 2fr 2fr 1fr 1fr 2fr 1fr;
+    grid-template-columns: 2fr 2fr 1fr 1fr 2fr 1fr 1fr;
   }
 
-  .email, .password, .button {
+  &__email, &__password {
     display: flex;
     gap: 0.5rem;
     align-items: center;
     justify-content: center;
 
-    .label {
-      display: block;
-      margin: auto;
-    }
-    input {
+    > input {
       flex-grow: 1;
     }
   }
 
-  button, .button {
+  &__message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__button {
+    appearance: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     font-size: 1rem;
     color: white;
     background-color: darkblue;
     border: 2px solid darkblue;
     border-radius: 5px;
     font-weight: 900;
-    display: block;
+    // display: block;
     padding: 5px;
+
+
+    &:disabled, &-disabled {
+      background-color: lightgray;
+      border: 2px solid darkgray;
+      pointer-events: none; // disable hover effect when the button is disabled
+    }
+
+    &:hover {
+      border: 2px solid green;
+    }
   }
-
-  button:disabled, .button-disabled {
-    background-color: lightgray;
-    border: 2px solid darkgray;
-    pointer-events: none;   // disable hover effect when the button is disabled
-  }
-
-
-  button:hover, .button:hover {
-    border: 2px solid green;
-  }
-
 }

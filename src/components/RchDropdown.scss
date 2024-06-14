@@ -1,0 +1,48 @@
+// Copyright (c) Pascal Brand
+// MIT License
+
+.button-appearance-none {
+  appearance: none;
+}
+
+.rch-dropdown {
+  --rch-size-s: 1rem;
+  --rch-size-m: 1rem;
+
+  position: relative;   // relative position for the selected value
+                        // the dropdown list is absolute so that what's below the control
+                        // keep its position
+
+  &__top {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+  }
+
+  &__button {
+    display: grid;
+    grid-template-columns: 1fr 20px;
+    align-items: center;
+  }
+
+  &__top-toclick {
+    padding: var(--rch-size-s);
+  }
+
+  // rch-dropdown__top styles the button/input of the dropdown
+  &__list {
+    position: absolute;       // right after the button, without moving the entire page
+    z-index: 1;               // the list is printed above the rest of the page
+    list-style-type: none;
+    // background-color: inherit;
+    padding: 0 var(--rch-size-m);
+  }
+
+  &__list-item {
+    width: 100%;
+  }
+  &__list-item:hover, &__list-item-hovered {
+    opacity: 0.5;
+  }
+
+}

@@ -6,6 +6,7 @@ import authenticate from '../hooks/authenticate';
 import storage from '../hooks/storage';
 import convert from '../hooks/convert';
 import city from '../hooks/city';
+import RchDropdown from './RchDropdown'
 
 import './Menu.scss'
 
@@ -81,10 +82,12 @@ function Sign({tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrac
     }
   }, [userCredential])
 
+  const list = ['item-1', 'item-2']
+
   return (
     <div className="menu">
       <form>
-        <div className='email'>
+        <div className='menu__email'>
           <label>Email</label>
           <input
             onChange={(e) => setEmail(e.target.value)}
@@ -93,7 +96,7 @@ function Sign({tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrac
           />
         </div>
 
-        <div className='password'>
+        <div className='menu__password'>
           <label>Password</label>
           <input
             onChange={(e) => setPassword(e.target.value)}
@@ -102,22 +105,31 @@ function Sign({tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrac
           />
         </div>
 
-        <button disabled={((email === '') || (password === ''))} onClick={handleSignup} type="submit">
+        <button className='menu__button' disabled={((email === '') || (password === ''))} onClick={handleSignup} type="submit">
           Sign Up
         </button>
-        <button disabled={((email === '') || (password === ''))} onClick={handleSignin} type="submit">
+        <button className='menu__button' disabled={((email === '') || (password === ''))} onClick={handleSignin} type="submit">
           Sign In
         </button>
 
-        <div>
+        <div className='menu__message'>
           { message }
         </div>
 
         { /* https://stackoverflow.com/questions/39484895/how-to-allow-input-type-file-to-select-the-same-file-in-react-component
              onClick event is used to upload the same file several times */ }
-        <label htmlFor="upload_gpx" className={'button' + (userCredential===undefined ? ' button-disabled' : '')} > Upload GPX </label>
+        <label className='menu__button' htmlFor="upload_gpx" > Upload GPX </label>
         <input multiple style={{display:'none'}} type="file" id="upload_gpx" name="upload_gpx" accept=".gpx" onChange={handleUploadGPX} onClick={(e) => e.target.value=null}/>
+
+          <RchDropdown
+              type='dropdown'
+              initialValue='item-1'
+              list={list}
+              valueFromItem={(s) => s}
+              onSelect={(obj) => console.log(obj.item)}
+              />
       </form>
+
 
     </div>
   );
