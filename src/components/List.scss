@@ -2,9 +2,18 @@
 // MIT License
 
 .list {
-  button {
-    margin: .5rem 1rem;
+  .item {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+
     width: calc(100% - 2rem);
+    margin: .5rem 1rem;
+  }
+
+  button {
+    // width: calc(100% - 2rem);
+    flex-grow: 1;
     overflow-wrap: break-word;
 
     border-radius: 8px;
@@ -18,6 +27,11 @@
 
   button:hover {
     border-color: green;
+  }
+
+  .trash {
+    margin: auto;
+    cursor: pointer;
   }
 
   .selected {

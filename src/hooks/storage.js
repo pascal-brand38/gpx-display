@@ -1,7 +1,7 @@
 // Copyright (c) Pascal Brand
 // MIT License
 
-import { getStorage, ref, uploadBytes, uploadString, getBlob } from "firebase/storage";
+import { getStorage, ref, uploadBytes, uploadString, getBlob, deleteObject } from "firebase/storage";
 import convert from "./convert";
 
 const jsonFormatFilename = 'all-tracks.json'
@@ -47,6 +47,17 @@ async function uploadPublicString(filename, string) {
   });
 }
 
+async function uploadTracks(userCredential, tracks) {
+  const jsonFormat = convert.tracksToJsonFormat(tracks)
+  const string = JSON.stringify(jsonFormat)
+  uploadStringToUser(userCredential, jsonFormatFilename, string)
+}
+
+async function removeFilename(userCredential, filename) {
+  const storage = getStorage();
+  const storageRef = ref(storage, `users/${userCredential.user.uid}/${filename}`);
+  deleteObject(storageRef)
+}
 
 async function fetchTracks(userCredential, setTracks, setBounds)  {
   try {
@@ -82,6 +93,8 @@ export default {
   uploadBlob,
   uploadStringToUser,
   uploadPublicString,
+  uploadTracks,
+  removeFilename,
   fetchTracks,
   jsonFormatFilename,
 }

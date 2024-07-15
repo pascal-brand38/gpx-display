@@ -1,10 +1,15 @@
 // Copyright (c) Pascal Brand
 // MIT License
 
-import './List.scss'
-import city from '../hooks/city'
+import { FaRegTrashCan } from "react-icons/fa6";
 
-function List({tracks, currentBounds, selectedTrack, setSelectedTrack, setHoverTrack}) {
+import './List.scss'
+import storage from '../hooks/storage';
+
+
+// import city from '../hooks/city'
+
+function List({tracks, setTracks, currentBounds, selectedTrack, setSelectedTrack, setHoverTrack, userCredential}) {
   if (currentBounds === undefined) {
     return
   }
@@ -23,6 +28,22 @@ function List({tracks, currentBounds, selectedTrack, setSelectedTrack, setHoverT
     console.log(track.meta.cities)
   }
 
+  const onTrash = (index) => {
+    if (index === selectedTrack) {
+      setSelectedTrack(undefined)
+    }
+    storage.removeFilename(userCredential, tracks[index].meta.gpxFilename)
+    if (tracks.length === 1) {
+      tracks = []
+    } else {
+      tracks.splice(index, index)
+    }
+    storage.uploadTracks(userCredential, tracks)
+
+    // setTracks(tracks) does not rerender as tracks is not changed (still an array at the same address)
+    setTracks([...tracks])
+  }
+
   const cleanName = (name) => {
     const regex = /-[0-9]+$/i
     return name.replace('<![CDATA[', '').replace(']]>', '').replace(regex, '')
@@ -35,7 +56,7 @@ function List({tracks, currentBounds, selectedTrack, setSelectedTrack, setHoverT
         if (isTrackInside(track, currentBounds)) {
           const addClass = ((index === selectedTrack) ? "selected" : "")
           return (
-            <div key={index}>
+            <div key={index} className='item'>
               <button className={addClass}
                 onClick={()=>onClick(index)}
                 onMouseLeave={()=>setHoverTrack(undefined)}
@@ -48,6 +69,10 @@ function List({tracks, currentBounds, selectedTrack, setSelectedTrack, setHoverT
                     {track.meta.distance}km
                   </div>
               </button>
+
+              <div className='trash'>
+                <FaRegTrashCan onClick={()=>onTrash(index)}/>
+              </div>
             </div>
           )
         } else {

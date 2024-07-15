@@ -10,12 +10,11 @@ import RchDropdown from './RchDropdown'
 
 import './Menu.scss'
 
-function Sign({tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrack}) {
+function Sign({tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrack, userCredential, setUserCredential}) {
   // States for registration
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-  const [userCredential, setUserCredential] = useState(undefined)
 
   // Handling the form submission
   const handleSignup = async (e) => {
@@ -62,10 +61,7 @@ function Sign({tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrac
 
     // setTracks(tracks) does not rerender as tracks is not changed (still an array at the same address)
     setTracks([...tracks])
-
-    const jsonFormat = convert.tracksToJsonFormat(tracks)
-    const string = JSON.stringify(jsonFormat)
-    storage.uploadStringToUser(userCredential, storage.jsonFormatFilename, string)
+    storage.uploadTracks(userCredential, tracks)
   }
 
   // temporary, to speed-up tests - remove it in production
@@ -137,7 +133,7 @@ function Sign({tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrac
 
 
 // app is undefined till the firebase application is initialized, which is required to authenticate
-function Menu({app, tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrack}) {
+function Menu({app, tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrack, userCredential, setUserCredential}) {
   if (app === undefined) {
     return (
       <div style={{textAlign:"center"}}>
@@ -148,7 +144,13 @@ function Menu({app, tracks, setTracks, setFirstBounds, setSelectedTrack, setHove
   } else {
     return (
       <div style={{textAlign:"center"}}>
-        <Sign tracks={tracks} setTracks={setTracks} setFirstBounds={setFirstBounds} setSelectedTrack={setSelectedTrack} setHoverTrack={setHoverTrack}/>
+        <Sign
+          tracks={tracks} setTracks={setTracks}
+          setFirstBounds={setFirstBounds}
+          setSelectedTrack={setSelectedTrack}
+          setHoverTrack={setHoverTrack}
+          userCredential={userCredential} setUserCredential={setUserCredential}
+        />
       </div>
     )
   }

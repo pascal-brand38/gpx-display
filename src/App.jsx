@@ -26,6 +26,7 @@ function App() {
   const [ hoverTrack, setHoverTrack ] = useState(undefined)           // index of the hovered track
   const [ firstBounds, setFirstBounds ] = useState(undefined)         // first bounds to be displayed
   const [ currentBounds, setCurrentBounds ] = useState(undefined)     // the current bounds of the displayed map
+  const [userCredential, setUserCredential] = useState(undefined)
 
   useEffect(() => {
     const initFirebase = async() => {
@@ -60,7 +61,14 @@ function App() {
     <>
     <div className="main-grid">
       <div className='cell-menu'>
-        <Menu app={app} tracks={tracks} setTracks={setTracks} setFirstBounds={setFirstBounds} setSelectedTrack={setSelectedTrack} setHoverTrack={setHoverTrack}/>
+        <Menu
+          app={app}
+          tracks={tracks} setTracks={setTracks}
+          setFirstBounds={setFirstBounds}
+          setSelectedTrack={setSelectedTrack}
+          setHoverTrack={setHoverTrack}
+          userCredential={userCredential} setUserCredential={setUserCredential}
+        />
       </div>
 
       <div className='cell-map'>
@@ -68,7 +76,13 @@ function App() {
       </div>
 
       <div className="cell-list">
-        <List tracks={tracks} currentBounds={currentBounds} selectedTrack={selectedTrack} setSelectedTrack={setSelectedTrack} setHoverTrack={setHoverTrack}/>
+        <List
+          tracks={tracks} setTracks={setTracks}
+          currentBounds={currentBounds}
+          selectedTrack={selectedTrack} setSelectedTrack={setSelectedTrack}
+          setHoverTrack={setHoverTrack}
+          userCredential={userCredential} setUserCredential={setUserCredential}
+        />
       </div>
 
       <div className='cell-description'>
