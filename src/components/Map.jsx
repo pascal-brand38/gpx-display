@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from 'react'
 
 import { MapContainer, TileLayer, Polyline, Marker, Popup, Tooltip, useMapEvents, useMap } from 'react-leaflet'
 import "leaflet/dist/leaflet.css";
+import './Map.scss'
 
 const attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> | Pascal Brand'
 const url = {

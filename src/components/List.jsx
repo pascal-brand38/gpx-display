@@ -4,12 +4,12 @@
 import { FaRegTrashCan } from "react-icons/fa6";
 
 import './List.scss'
-import storage from '../hooks/storage';
+import storage from '../hooks/storage'
 
 
 // import city from '../hooks/city'
 
-function List({tracks, setTracks, currentBounds, selectedTrack, setSelectedTrack, setHoverTrack, userCredential}) {
+function List({tracks, setTracks, currentBounds, selectedTrack, setSelectedTrack, setHoverTrack, userCredential, setLoading}) {
   if (currentBounds === undefined) {
     return
   }
@@ -28,20 +28,22 @@ function List({tracks, setTracks, currentBounds, selectedTrack, setSelectedTrack
     console.log(track.meta.cities)
   }
 
-  const onTrash = (index) => {
+  const onTrash = async (index) => {
+    setLoading(true)
     if (index === selectedTrack) {
       setSelectedTrack(undefined)
     }
-    storage.removeFilename(userCredential, tracks[index].meta.gpxFilename)
+    await storage.removeFilename(userCredential, tracks[index].meta.gpxFilename)
     if (tracks.length === 1) {
       tracks = []
     } else {
       tracks.splice(index, index)
     }
-    storage.uploadTracks(userCredential, tracks)
+    await storage.uploadTracks(userCredential, tracks)
 
     // setTracks(tracks) does not rerender as tracks is not changed (still an array at the same address)
     setTracks([...tracks])
+    setLoading(false)
   }
 
   const cleanName = (name) => {

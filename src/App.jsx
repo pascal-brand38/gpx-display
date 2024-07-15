@@ -9,6 +9,7 @@ import { Menu } from './components/Menu';
 import { Description } from './components/Description';
 import { Map } from './components/Map';
 import { List } from './components/List';
+import { Loading } from './components/Loading';
 
 function App() {
   // https://urfdvw.github.io/react-local-file-system/
@@ -26,7 +27,8 @@ function App() {
   const [ hoverTrack, setHoverTrack ] = useState(undefined)           // index of the hovered track
   const [ firstBounds, setFirstBounds ] = useState(undefined)         // first bounds to be displayed
   const [ currentBounds, setCurrentBounds ] = useState(undefined)     // the current bounds of the displayed map
-  const [userCredential, setUserCredential] = useState(undefined)
+  const [ userCredential, setUserCredential ] = useState(undefined)
+  const [ loading, setLoading] = useState(false)
 
   useEffect(() => {
     const initFirebase = async() => {
@@ -58,7 +60,7 @@ function App() {
   // }
 
   return (
-    <>
+  <div>
     <div className="main-grid">
       <div className='cell-menu'>
         <Menu
@@ -68,6 +70,7 @@ function App() {
           setSelectedTrack={setSelectedTrack}
           setHoverTrack={setHoverTrack}
           userCredential={userCredential} setUserCredential={setUserCredential}
+          setLoading={setLoading}
         />
       </div>
 
@@ -82,6 +85,7 @@ function App() {
           selectedTrack={selectedTrack} setSelectedTrack={setSelectedTrack}
           setHoverTrack={setHoverTrack}
           userCredential={userCredential} setUserCredential={setUserCredential}
+          setLoading={setLoading}
         />
       </div>
 
@@ -89,8 +93,9 @@ function App() {
         <Description tracks={tracks} selectedTrack={selectedTrack} />
       </div>
 
+      {loading && <Loading />}
     </div>
-    </>
+  </div>
   )
 
 }

@@ -1,0 +1,8 @@
+// Copyright (c) Pascal Brand
+// MIT License
+
+// https://stackoverflow.com/questions/55291179/how-to-overlay-content-on-react-leaflet-z-index-problem
+// Used to see the modal when loading
+.leaflet-control { z-index: 0 !important}
+.leaflet-pane { z-index: 0 !important}
+.leaflet-top, .leaflet-bottom {z-index: 0 !important}

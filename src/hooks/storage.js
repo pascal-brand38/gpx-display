@@ -23,40 +23,31 @@ async function downloadPublicBlob(filename) {
 async function uploadBlob(userCredential, filename, blob) {
   const storage = getStorage();
   const storageRef = ref(storage, `users/${userCredential.user.uid}/${filename}`);
-
-  uploadBytes(storageRef, blob).then((snapshot) => {
-    console.log(`Uploaded ${filename}`);
-  });
+  return uploadBytes(storageRef, blob)
 }
 
 async function uploadStringToUser(userCredential, filename, string) {
   const storage = getStorage();
   const storageRef = ref(storage, `users/${userCredential.user.uid}/${filename}`);
-
-  uploadString(storageRef, string).then((snapshot) => {
-    console.log(`Uploaded ${filename}`);
-  });
+  return uploadString(storageRef, string)
 }
 
 async function uploadPublicString(filename, string) {
   const storage = getStorage();
   const storageRef = ref(storage, `public/${filename}`);
-
-  uploadString(storageRef, string).then((snapshot) => {
-    console.log(`Uploaded ${filename}`);
-  });
+  return uploadString(storageRef, string)
 }
 
 async function uploadTracks(userCredential, tracks) {
   const jsonFormat = convert.tracksToJsonFormat(tracks)
   const string = JSON.stringify(jsonFormat)
-  uploadStringToUser(userCredential, jsonFormatFilename, string)
+  return uploadStringToUser(userCredential, jsonFormatFilename, string)
 }
 
 async function removeFilename(userCredential, filename) {
   const storage = getStorage();
   const storageRef = ref(storage, `users/${userCredential.user.uid}/${filename}`);
-  deleteObject(storageRef)
+  return deleteObject(storageRef)
 }
 
 async function fetchTracks(userCredential, setTracks, setBounds)  {

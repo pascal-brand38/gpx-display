@@ -10,7 +10,7 @@ import RchDropdown from './RchDropdown'
 
 import './Menu.scss'
 
-function Sign({tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrack, userCredential, setUserCredential}) {
+function Sign({tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrack, userCredential, setUserCredential, setLoading}) {
   // States for registration
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,22 +19,27 @@ function Sign({tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrac
   // Handling the form submission
   const handleSignup = async (e) => {
     e.preventDefault();
-    authenticate.signUp(email, password, setEmail, setPassword, setMessage, setUserCredential)
+    setLoading(true)
+    await authenticate.signUp(email, password, setEmail, setPassword, setMessage, setUserCredential)
+    setLoading(false)
   }
   const handleSignin = async (e) => {
     e.preventDefault();
-    authenticate.signIn(email, password, setEmail, setPassword, setMessage, setUserCredential)
+    setLoading(true)
+    await authenticate.signIn(email, password, setEmail, setPassword, setMessage, setUserCredential)
+    setLoading(false)
   }
 
   const handleUploadGPX = async (e) => {
     // https://firebase.google.com/docs/storage/web/upload-files?hl=fr
     e.preventDefault();
+    setLoading(true)
     await city.getGeonames()
     await Promise.all(
       Array.from(e.target.files).map(async (file, index) => {
         const filename = file.name
         const blob = e.target.files.item(index)
-        storage.uploadBlob(userCredential, filename, blob)
+        await storage.uploadBlob(userCredential, filename, blob)
         const gpxXml = await blob.text()
         const track = convert.gpxToTrack(gpxXml, filename)
 
@@ -61,7 +66,8 @@ function Sign({tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrac
 
     // setTracks(tracks) does not rerender as tracks is not changed (still an array at the same address)
     setTracks([...tracks])
-    storage.uploadTracks(userCredential, tracks)
+    await storage.uploadTracks(userCredential, tracks)
+    setLoading(false)
   }
 
   // temporary, to speed-up tests - remove it in production
@@ -72,9 +78,10 @@ function Sign({tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrac
   useEffect(() => {
     // load all.json file to have all the tracks
     if (userCredential !== undefined) {
-      storage.fetchTracks(userCredential, setTracks, setFirstBounds)
+      setTracks([])
       setSelectedTrack(undefined)
       setHoverTrack(undefined)
+      storage.fetchTracks(userCredential, setTracks, setFirstBounds)
     }
   }, [userCredential])
 
@@ -133,7 +140,7 @@ function Sign({tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrac
 
 
 // app is undefined till the firebase application is initialized, which is required to authenticate
-function Menu({app, tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrack, userCredential, setUserCredential}) {
+function Menu({app, tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrack, userCredential, setUserCredential, setLoading}) {
   if (app === undefined) {
     return (
       <div style={{textAlign:"center"}}>
@@ -150,6 +157,7 @@ function Menu({app, tracks, setTracks, setFirstBounds, setSelectedTrack, setHove
           setSelectedTrack={setSelectedTrack}
           setHoverTrack={setHoverTrack}
           userCredential={userCredential} setUserCredential={setUserCredential}
+          setLoading={setLoading}
         />
       </div>
     )
