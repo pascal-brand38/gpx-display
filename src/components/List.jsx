@@ -23,6 +23,11 @@ function List({tracks, currentBounds, selectedTrack, setSelectedTrack, setHoverT
     console.log(track.meta.cities)
   }
 
+  const cleanName = (name) => {
+    const regex = /-[0-9]+$/i
+    return name.replace('<![CDATA[', '').replace(']]>', '').replace(regex, '')
+  }
+
   return (
     <div className='list'>
     {
@@ -35,7 +40,7 @@ function List({tracks, currentBounds, selectedTrack, setSelectedTrack, setHoverT
                 onClick={()=>onClick(index)}
                 onMouseLeave={()=>setHoverTrack(undefined)}
                 onMouseOver={()=>setHoverTrack(index)}>
-                  <div className='title'> {track.meta.name} </div>
+                  <div className='title'> { cleanName(track.meta.name) } </div>
                   <div className='summary'>
                     {(track.meta.startDate) ? track.meta.startDate.toFormat('dd/MM/yyyy') : 'unknown'}
                     {/* {track.meta.startDate} */}
