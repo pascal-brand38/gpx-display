@@ -29,21 +29,23 @@ function List({tracks, setTracks, currentBounds, selectedTrack, setSelectedTrack
   }
 
   const onTrash = async (index) => {
+    console.log(`TRASH of ${index} - ${tracks[index].meta}`)
+    console.log(tracks)
     setLoading(true)
     if (index === selectedTrack) {
       setSelectedTrack(undefined)
     }
     await storage.removeFilename(userCredential, tracks[index].meta.gpxFilename)
-    if (tracks.length === 1) {
-      tracks = []
-    } else {
-      tracks.splice(index, index)
-    }
+      .catch(error => console.log(`Cannot remove file ${tracks[index].meta.gpxFilename}`))
+    tracks.splice(index, 1)
+    console.log(tracks)
+
     await storage.uploadTracks(userCredential, tracks)
 
     // setTracks(tracks) does not rerender as tracks is not changed (still an array at the same address)
     setTracks([...tracks])
     setLoading(false)
+    console.log('DONE')
   }
 
   const cleanName = (name) => {

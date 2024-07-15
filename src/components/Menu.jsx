@@ -53,14 +53,14 @@ function Sign({tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrac
       })
     )
 
-    // sort the tracks by start time
+    // sort the tracks by start time, in reverse order
     tracks = tracks.sort((a, b) => {
       if (a.meta.epoch === undefined) {
-        return +1
-      } else if (b.meta.epoch === undefined) {
         return -1
+      } else if (b.meta.epoch === undefined) {
+        return +1
       } else {
-        return a.meta.epoch - b.meta.epoch
+        return b.meta.epoch - a.meta.epoch
       }
     })
 
