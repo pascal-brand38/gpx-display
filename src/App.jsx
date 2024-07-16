@@ -12,15 +12,6 @@ import { List } from './components/List';
 import { Loading } from './components/Modal';
 
 function App() {
-  // https://urfdvw.github.io/react-local-file-system/
-  // https://classic.yarnpkg.com/en/package/react-local-file-system
-  // https://www.npmjs.com/package/react-local-file-system
-
-  // https://stackoverflow.com/questions/55830414/how-to-read-text-file-in-react
-
-
-  // const str = fs.readFileSync('C:\\Users\\pasca\\Downloads\\activity_allemans_levignac_2ePyKv0W9XA8eFYoEL8tlEXSA01.gpx')
-  // console.log(str)
   const [ app, setApp ] = useState(undefined)                         // firebase initialization
   const [ tracks, setTracks ] = useState([])                          // all the tracks, as a jsonFormat format
   const [ selectedTrack, setSelectedTrack ] = useState(undefined)     // index of the selected track
@@ -60,12 +51,14 @@ function App() {
   //   return null;
   // }
 
+  if (app === undefined) {
+    return
+  }
+
   return (
-  <div>
     <div className="main-grid">
       <div className='cell-menu'>
         <Menu
-          app={app}
           tracks={tracks} setTracks={setTracks}
           setFirstBounds={setFirstBounds}
           setSelectedTrack={setSelectedTrack}
@@ -98,7 +91,6 @@ function App() {
       {loading && <Loading />}
       {messageBlock && messageBlock}
     </div>
-  </div>
   )
 
 }

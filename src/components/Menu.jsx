@@ -10,7 +10,7 @@ import RchDropdown from './RchDropdown'
 
 import './Menu.scss'
 
-function Sign({tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrack, userCredential, setUserCredential, setLoading}) {
+function Menu({tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrack, userCredential, setUserCredential, setLoading}) {
   // States for registration
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -138,30 +138,5 @@ function Sign({tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrac
   );
 }
 
-
-// app is undefined till the firebase application is initialized, which is required to authenticate
-function Menu({app, tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrack, userCredential, setUserCredential, setLoading}) {
-  if (app === undefined) {
-    return (
-      <div style={{textAlign:"center"}}>
-        !!! Waiting for Firebase connexion !!!
-      </div>
-    )
-
-  } else {
-    return (
-      <div style={{textAlign:"center"}}>
-        <Sign
-          tracks={tracks} setTracks={setTracks}
-          setFirstBounds={setFirstBounds}
-          setSelectedTrack={setSelectedTrack}
-          setHoverTrack={setHoverTrack}
-          userCredential={userCredential} setUserCredential={setUserCredential}
-          setLoading={setLoading}
-        />
-      </div>
-    )
-  }
-}
 
 export { Menu }
