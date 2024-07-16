@@ -3,7 +3,6 @@
 
 import { useState, useEffect } from 'react'
 import authenticate from '../hooks/authenticate';
-import storage from '../hooks/storage';
 import convert from '../hooks/convert';
 import city from '../hooks/city';
 import RchDropdown from './RchDropdown'
@@ -74,16 +73,6 @@ function Menu({tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrac
   useEffect(() => {
     authenticate.signIn('toto@titi.fr', 'tototo', setEmail, setPassword, setMessage, setUserCredential)
   }, [])
-
-  useEffect(() => {
-    // load all.json file to have all the tracks
-    if (userCredential !== undefined) {
-      setTracks([])
-      setSelectedTrack(undefined)
-      setHoverTrack(undefined)
-      storage.fetchTracks(userCredential, setTracks, setFirstBounds)
-    }
-  }, [userCredential])
 
   const list = ['item-1', 'item-2']
 

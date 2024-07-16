@@ -10,18 +10,21 @@ import { Description } from './components/Description';
 import { Map } from './components/Map';
 import { List } from './components/List';
 import { Loading } from './components/Modal';
+import storage from './hooks/storage';
 
 function App() {
   const [ app, setApp ] = useState(undefined)                         // firebase initialization
+  const [ userCredential, setUserCredential ] = useState(undefined)   // firebase user credential when signed
+
   const [ tracks, setTracks ] = useState([])                          // all the tracks, as a jsonFormat format
   const [ selectedTrack, setSelectedTrack ] = useState(undefined)     // index of the selected track
   const [ hoverTrack, setHoverTrack ] = useState(undefined)           // index of the hovered track
   const [ firstBounds, setFirstBounds ] = useState(undefined)         // first bounds to be displayed
   const [ currentBounds, setCurrentBounds ] = useState(undefined)     // the current bounds of the displayed map
-  const [ userCredential, setUserCredential ] = useState(undefined)
   const [ loading, setLoading] = useState(false)
   const [ messageBlock, setMessageBlock] = useState(undefined)
 
+  // On the application initialization, initialize firebase
   useEffect(() => {
     const initFirebase = async() => {
       const firebaseConfig = {
@@ -41,6 +44,22 @@ function App() {
 
     initFirebase()
   }, [])
+
+  // when credentials are changed
+  // load all.json file to have all the tracks, and reset selected and hovered tracks
+  useEffect(() => {
+    const initTracks = async () => {
+      setLoading(true)
+      setTracks([])
+      setSelectedTrack(undefined)
+      setHoverTrack(undefined)
+      await storage.fetchTracks(userCredential, setTracks, setFirstBounds)
+      setLoading(false)
+    }
+    if (userCredential !== undefined) {
+      initTracks()
+    }
+  }, [userCredential])
 
   // from https://stackoverflow.com/questions/64665827/react-leaflet-center-attribute-does-not-change-when-the-center-state-changes
   // to update center
