@@ -10,7 +10,10 @@ import { Description } from './components/Description';
 import { Map } from './components/Map';
 import { List } from './components/List';
 import { Loading } from './components/Modal';
+
 import storage from './hooks/storage';
+import convert from './hooks/convert';
+import city from './hooks/city';
 
 function App() {
   const [ app, setApp ] = useState(undefined)                         // firebase initialization
@@ -23,6 +26,47 @@ function App() {
   const [ currentBounds, setCurrentBounds ] = useState(undefined)     // the current bounds of the displayed map
   const [ loading, setLoading] = useState(false)
   const [ messageBlock, setMessageBlock] = useState(undefined)
+
+  const handleUploadGPX = async (e) => {
+    // https://firebase.google.com/docs/storage/web/upload-files?hl=fr
+    e.preventDefault();
+    setLoading(true)
+    let newTracks = tracks
+    await city.getGeonames()
+    await Promise.all(
+      Array.from(e.target.files).map(async (file, index) => {
+        const filename = file.name
+        const blob = e.target.files.item(index)
+        await storage.uploadBlob(userCredential, filename, blob)
+        const gpxXml = await blob.text()
+        const track = convert.gpxToTrack(gpxXml, filename)
+
+        // remove duplicates
+        if (track.meta.epoch !== undefined) {
+          newTracks = newTracks.filter(t => t.meta.epoch !== track.meta.epoch)
+        }
+        newTracks = newTracks.filter(t => t.meta.gpxFilename !== track.meta.gpxFilename)
+
+        newTracks.push(track)
+      })
+    )
+
+    // sort the tracks by start time, in reverse order
+    newTracks = newTracks.sort((a, b) => {
+      if (a.meta.epoch === undefined) {
+        return -1
+      } else if (b.meta.epoch === undefined) {
+        return +1
+      } else {
+        return b.meta.epoch - a.meta.epoch
+      }
+    })
+
+    // setTracks(tracks) does not rerender as tracks is not changed (still an array at the same address)
+    setTracks([...newTracks])
+    await storage.uploadTracks(userCredential, newTracks)
+    setLoading(false)
+  }
 
   // On the application initialization, initialize firebase
   useEffect(() => {
@@ -78,11 +122,8 @@ function App() {
     <div className="main-grid">
       <div className='cell-menu'>
         <Menu
-          tracks={tracks} setTracks={setTracks}
-          setFirstBounds={setFirstBounds}
-          setSelectedTrack={setSelectedTrack}
-          setHoverTrack={setHoverTrack}
-          userCredential={userCredential} setUserCredential={setUserCredential}
+          handleUploadGPX={handleUploadGPX}
+          setUserCredential={setUserCredential}
           setLoading={setLoading}
         />
       </div>

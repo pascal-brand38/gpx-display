@@ -3,13 +3,11 @@
 
 import { useState, useEffect } from 'react'
 import authenticate from '../hooks/authenticate';
-import convert from '../hooks/convert';
-import city from '../hooks/city';
 import RchDropdown from './RchDropdown'
 
 import './Menu.scss'
 
-function Menu({tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrack, userCredential, setUserCredential, setLoading}) {
+function Menu({ handleUploadGPX, setUserCredential, setLoading}) {
   // States for registration
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,46 +24,6 @@ function Menu({tracks, setTracks, setFirstBounds, setSelectedTrack, setHoverTrac
     e.preventDefault();
     setLoading(true)
     await authenticate.signIn(email, password, setEmail, setPassword, setMessage, setUserCredential)
-    setLoading(false)
-  }
-
-  const handleUploadGPX = async (e) => {
-    // https://firebase.google.com/docs/storage/web/upload-files?hl=fr
-    e.preventDefault();
-    setLoading(true)
-    await city.getGeonames()
-    await Promise.all(
-      Array.from(e.target.files).map(async (file, index) => {
-        const filename = file.name
-        const blob = e.target.files.item(index)
-        await storage.uploadBlob(userCredential, filename, blob)
-        const gpxXml = await blob.text()
-        const track = convert.gpxToTrack(gpxXml, filename)
-
-        // remove duplicates
-        if (track.meta.epoch !== undefined) {
-          tracks = tracks.filter(t => t.meta.epoch !== track.meta.epoch)
-        }
-        tracks = tracks.filter(t => t.meta.gpxFilename !== track.meta.gpxFilename)
-
-        tracks.push(track)
-      })
-    )
-
-    // sort the tracks by start time, in reverse order
-    tracks = tracks.sort((a, b) => {
-      if (a.meta.epoch === undefined) {
-        return -1
-      } else if (b.meta.epoch === undefined) {
-        return +1
-      } else {
-        return b.meta.epoch - a.meta.epoch
-      }
-    })
-
-    // setTracks(tracks) does not rerender as tracks is not changed (still an array at the same address)
-    setTracks([...tracks])
-    await storage.uploadTracks(userCredential, tracks)
     setLoading(false)
   }
 
