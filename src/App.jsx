@@ -9,7 +9,7 @@ import { Menu } from './components/Menu';
 import { Description } from './components/Description';
 import { Map } from './components/Map';
 import { List } from './components/List';
-import { Loading } from './components/Loading';
+import { Loading } from './components/Modal';
 
 function App() {
   // https://urfdvw.github.io/react-local-file-system/
@@ -29,6 +29,7 @@ function App() {
   const [ currentBounds, setCurrentBounds ] = useState(undefined)     // the current bounds of the displayed map
   const [ userCredential, setUserCredential ] = useState(undefined)
   const [ loading, setLoading] = useState(false)
+  const [ messageBlock, setMessageBlock] = useState(undefined)
 
   useEffect(() => {
     const initFirebase = async() => {
@@ -86,6 +87,7 @@ function App() {
           setHoverTrack={setHoverTrack}
           userCredential={userCredential} setUserCredential={setUserCredential}
           setLoading={setLoading}
+          setMessageBlock={setMessageBlock}
         />
       </div>
 
@@ -94,6 +96,7 @@ function App() {
       </div>
 
       {loading && <Loading />}
+      {messageBlock && messageBlock}
     </div>
   </div>
   )
