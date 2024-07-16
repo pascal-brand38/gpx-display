@@ -2,12 +2,9 @@
 // MIT License
 
 import { FaRegTrashCan } from "react-icons/fa6";
-
-import { YesNo } from './Modal';
 import './List.scss'
-import storage from '../hooks/storage'
 
-function List({tracks, setTracks, currentBounds, selectedTrack, setSelectedTrack, setHoverTrack, userCredential, setLoading, setMessageBlock}) {
+function List({onTrash, tracks, currentBounds, selectedTrack, setSelectedTrack, setHoverTrack }) {
   if (currentBounds === undefined) {
     return
   }
@@ -18,37 +15,6 @@ function List({tracks, setTracks, currentBounds, selectedTrack, setSelectedTrack
       isInside(p.lat, currentBounds[0][0], currentBounds[1][0]) &&
       isInside(p.lon, currentBounds[0][1], currentBounds[1][1])
     )
-  }
-
-  const onClick = (index) => {
-    setSelectedTrack(index)
-    const track = tracks[index]
-    console.log(track.meta.cities)
-  }
-
-  const onTrash = async (index) => {
-    const trash = async (yesorno) => {
-      setMessageBlock(undefined)
-      if (yesorno) {
-        setLoading(true)
-        if (index === selectedTrack) {
-          setSelectedTrack(undefined)
-        }
-        await storage.removeFilename(userCredential, tracks[index].meta.gpxFilename)
-          .catch(error => console.log(`Cannot remove file ${tracks[index].meta.gpxFilename}`))
-        tracks.splice(index, 1)
-        console.log(tracks)
-
-        await storage.uploadTracks(userCredential, tracks)
-
-        // setTracks(tracks) does not rerender as tracks is not changed (still an array at the same address)
-        setTracks([...tracks])
-        setLoading(false)
-      }
-    }
-
-    const MessageBlock = () => YesNo('Confirmation de suppression du parcours ?', cleanName(tracks[index].meta.name), trash);
-    setMessageBlock(MessageBlock)
   }
 
   const cleanName = (name) => {
@@ -65,9 +31,9 @@ function List({tracks, setTracks, currentBounds, selectedTrack, setSelectedTrack
           return (
             <div key={index} className='item'>
               <button className={addClass}
-                onClick={()=>onClick(index)}
-                onMouseLeave={()=>setHoverTrack(undefined)}
-                onMouseOver={()=>setHoverTrack(index)}>
+                onClick={ () => setSelectedTrack(index) }
+                onMouseLeave={ () => setHoverTrack(undefined) }
+                onMouseOver={ () => setHoverTrack(index) }>
                   <div className='title'> { cleanName(track.meta.name) } </div>
                   <div className='summary'>
                     {(track.meta.startDate) ? track.meta.startDate.toFormat('dd/MM/yyyy') : 'unknown'}
@@ -78,7 +44,7 @@ function List({tracks, setTracks, currentBounds, selectedTrack, setSelectedTrack
               </button>
 
               <div className='trash'>
-                <FaRegTrashCan onClick={()=>onTrash(index)}/>
+                <FaRegTrashCan onClick={()=>onTrash(index, cleanName(tracks[index].meta.name))}/>
               </div>
             </div>
           )

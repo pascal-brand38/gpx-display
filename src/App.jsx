@@ -9,7 +9,7 @@ import { Menu } from './components/Menu';
 import { Description } from './components/Description';
 import { Map } from './components/Map';
 import { List } from './components/List';
-import { Loading } from './components/Modal';
+import { Loading, YesNo } from './components/Modal';
 
 import storage from './hooks/storage';
 import convert from './hooks/convert';
@@ -67,6 +67,32 @@ function App() {
     await storage.uploadTracks(userCredential, newTracks)
     setLoading(false)
   }
+
+  const onTrash = async (index, displayName) => {
+    const trash = async (yesorno) => {
+      setMessageBlock(undefined)
+      if (yesorno) {
+        setLoading(true)
+        if (index === selectedTrack) {
+          setSelectedTrack(undefined)
+        }
+        await storage.removeFilename(userCredential, tracks[index].meta.gpxFilename)
+          .catch(error => console.log(`Cannot remove file ${tracks[index].meta.gpxFilename}`))
+        tracks.splice(index, 1)
+        console.log(tracks)
+
+        await storage.uploadTracks(userCredential, tracks)
+
+        // setTracks(tracks) does not rerender as tracks is not changed (still an array at the same address)
+        setTracks([...tracks])
+        setLoading(false)
+      }
+    }
+
+    const MessageBlock = () => YesNo('Confirmation de suppression du parcours ?', displayName, trash);
+    setMessageBlock(MessageBlock)
+  }
+
 
   // On the application initialization, initialize firebase
   useEffect(() => {
@@ -134,13 +160,11 @@ function App() {
 
       <div className="cell-list">
         <List
-          tracks={tracks} setTracks={setTracks}
+          onTrash={onTrash}
+          tracks={tracks}
           currentBounds={currentBounds}
           selectedTrack={selectedTrack} setSelectedTrack={setSelectedTrack}
           setHoverTrack={setHoverTrack}
-          userCredential={userCredential} setUserCredential={setUserCredential}
-          setLoading={setLoading}
-          setMessageBlock={setMessageBlock}
         />
       </div>
 
