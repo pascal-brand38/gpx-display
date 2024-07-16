@@ -30,6 +30,7 @@ function App() {
   const handleUploadGPX = async (e) => {
     // https://firebase.google.com/docs/storage/web/upload-files?hl=fr
     e.preventDefault();
+    let arrayWait = []
     setLoading(true)
     let newTracks = tracks
     await city.getGeonames()
@@ -37,7 +38,7 @@ function App() {
       Array.from(e.target.files).map(async (file, index) => {
         const filename = file.name
         const blob = e.target.files.item(index)
-        await storage.uploadBlob(userCredential, filename, blob)
+        arrayWait.push(storage.uploadBlob(userCredential, filename, blob))
         const gpxXml = await blob.text()
         const track = convert.gpxToTrack(gpxXml, filename)
 
@@ -64,7 +65,8 @@ function App() {
 
     // setTracks(tracks) does not rerender as tracks is not changed (still an array at the same address)
     setTracks([...newTracks])
-    await storage.uploadTracks(userCredential, newTracks)
+    arrayWait.push(storage.uploadTracks(userCredential, newTracks))
+    await Promise.all(arrayWait)
     setLoading(false)
   }
 
